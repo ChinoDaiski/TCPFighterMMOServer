@@ -1,0 +1,378 @@
+#include "pch.h"
+#include "PacketProc.h"
+#include "Packet.h"
+#include "MakePacket.h"
+
+#include "SessionManager.h"
+
+#include "Player.h"
+
+bool PacketProc(CSession* pSession, PACKET_TYPE packetType, CPacket* pPacket)
+{
+    switch (packetType)
+    {
+        /*case PACKET_TYPE::CS_MOVE_START:
+    {
+        UINT8 Direction;
+        UINT16 X;
+        UINT16 Y;
+
+        *pPacket >> Direction;
+        *pPacket >> X;
+        *pPacket >> Y;
+
+        return CS_MOVE_START(pSession, Direction, X, Y);
+    }
+    break;
+    case PACKET_TYPE::CS_MOVE_STOP:
+    {
+        UINT8 Direction;
+        UINT16 X;
+        UINT16 Y;
+
+        *pPacket >> Direction;
+        *pPacket >> X;
+        *pPacket >> Y;
+
+        return CS_MOVE_STOP(pSession, Direction, X, Y);
+    }
+    break;
+    case PACKET_TYPE::CS_ATTACK1:
+    {
+        UINT8 Direction;
+        UINT16 X;
+        UINT16 Y;
+
+        *pPacket >> Direction;
+        *pPacket >> X;
+        *pPacket >> Y;
+
+        return CS_ATTACK1(pSession, Direction, X, Y);
+    }
+    break;
+    case PACKET_TYPE::CS_ATTACK2:
+    {
+        UINT8 Direction;
+        UINT16 X;
+        UINT16 Y;
+
+        *pPacket >> Direction;
+        *pPacket >> X;
+        *pPacket >> Y;
+
+        return CS_ATTACK2(pSession, Direction, X, Y);
+    }
+    break;
+    case PACKET_TYPE::CS_ATTACK3:
+    {
+        UINT8 Direction;
+        UINT16 X;
+        UINT16 Y;
+
+        *pPacket >> Direction;
+        *pPacket >> X;
+        *pPacket >> Y;
+
+        return CS_ATTACK3(pSession, Direction, X, Y);
+    }
+    break;*/
+    default:
+        return false;
+        break;
+    }
+    return false;
+}
+
+
+//bool CS_MOVE_START(CSession* pSession, UINT8 direction, UINT16 x, UINT16 y)
+//{
+//    // 메시지 수신 로그 확인
+//    // ==========================================================================================================
+//    // 서버의 위치와 받은 패킷의 위치값이 너무 큰 차이가 난다면 끊어버림                           .
+//    // 본 게임의 좌표 동기화 구조는 단순한 키보드 조작 (클라어안트의 션처리, 서버의 후 반영) 방식으로
+//    // 클라이언트의 좌표를 그대로 믿는 방식을 택하고 있음.
+//    // 실제 온라인 게임이라면 클라이언트에서 목적지를 공유하는 방식을 택해야함.
+//    // 지금은 간단한 구현을 목적으로 하고 있으므로 오차범위 내에서 클라이언트 좌표를 믿도록 한다.
+//    // ==========================================================================================================
+//
+//    CPlayer* pPlayer = static_cast<CPlayer*>(pSession->pObj);
+//
+//    UINT16 posX, posY;
+//    pPlayer->getPosition(posX, posY);
+//    if (
+//        std::abs(posX - x) > dfERROR_RANGE ||
+//        std::abs(posY - y) > dfERROR_RANGE
+//        )
+//    {
+//        NotifyClientDisconnected(pSession);
+//
+//        // 로그 찍을거면 여기서 찍을 것
+//        int gapX = std::abs(posX - x);
+//        int gapY = std::abs(posY - y);
+//        DebugBreak();
+//
+//        return false;
+//    }
+//
+//    // ==========================================================================================================
+//    // 동작을 변경. 지금 구현에선 동작번호가 방향값. 내부에서 바라보는 방향도 변경
+//    // ==========================================================================================================
+//    pPlayer->SetDirection(direction);
+//
+//
+//    // ==========================================================================================================
+//    // 당사자를 제외한, 현재 접속중인 모든 사용자에게 패킷을 뿌림.
+//    // ==========================================================================================================
+//    SC_MOVE_START_FOR_All(pSession, pSession->uid, pPlayer->GetDirection(), x, y);
+//
+//
+//    //=====================================================================================================================================
+//    // 이동 연산 시작을 알림
+//    //=====================================================================================================================================
+//    pPlayer->SetFlag(FLAG_MOVING, true);
+//
+//    return true;
+//}
+//
+//bool CS_MOVE_STOP(CSession* pSession, UINT8 direction, UINT16 x, UINT16 y)
+//{
+//    // 현재 선택된 클라이언트가 서버에게 움직임을 멈출 것이라 요청
+//    // 1. 받은 데이터 처리
+//    // 2. PACKET_SC_MOVE_STOP 을 브로드캐스팅
+//    // 3. 서버 내에서 이동 연산 멈춤을 알림
+//
+//    CPlayer* pPlayer = static_cast<CPlayer*>(pSession->pObj);
+//
+//    //=====================================================================================================================================
+//    // 1. 받은 데이터 처리
+//    //=====================================================================================================================================
+//    pPlayer->SetDirection(direction);
+//    pPlayer->SetPosition(x, y);
+//
+//    //=====================================================================================================================================
+//    // 2. PACKET_SC_MOVE_STOP 를 브로드캐스팅
+//    //=====================================================================================================================================
+//    SC_MOVE_STOP_FOR_All(pSession, pSession->uid, pPlayer->GetDirection(), x, y);
+//
+//    //=====================================================================================================================================
+//    // 3. 서버 내에서 이동 연산 멈춤을 알림
+//    //=====================================================================================================================================
+//    pPlayer->SetFlag(FLAG_MOVING, false);
+//
+//    return true;
+//}
+//
+//bool CS_ATTACK1(CSession* pSession, UINT8 direction, UINT16 x, UINT16 y)
+//{
+//    // 클라이언트로 부터 공격 메시지가 들어옴.
+//    // g_clientList를 순회하며 공격 1의 범위를 연산해서 데미지를 넣어줌.
+//    // 1. dfPACKET_SC_ATTACK1 을 브로드캐스팅
+//    // 2. 공격받을 캐릭터를 검색. 검색에 성공하면 3, 4번 절차 진행
+//    // 3. dfPACKET_SC_DAMAGE 를 브로드캐스팅
+//    // 4. 만약 체력이 0 이하로 떨어졌다면 dfPACKET_SC_DELETE_CHARACTER 를 브로드캐스팅하고, 서버에서 삭제할 수 있도록 함 -> 이 부분은 로직에서 처리하도록 바꿈.
+//
+//    CPlayer* pPlayer = static_cast<CPlayer*>(pSession->pObj);
+//
+//    //=====================================================================================================================================
+//    // 1. dfPACKET_SC_ATTACK1 을 브로드캐스팅
+//    //=====================================================================================================================================
+//    pPlayer->SetPosition(x, y);
+//
+//    SC_ATTACK1_FOR_All(pSession, pSession->uid, pPlayer->GetDirection(), x, y);
+//
+//    //=====================================================================================================================================
+//    // 2. 공격받을 캐릭터를 검색. 검색에 성공하면 3, 4번 절차 진행
+//    //=====================================================================================================================================
+//
+//    // 내가 바라보는 방향에 따라 공격 범위가 달라짐.
+//    UINT16 left, right, top, bottom;
+//    UINT16 posX, posY;
+//    pPlayer->getPosition(posX, posY);
+//
+//    // 왼쪽을 바라보고 있었다면
+//    if (pPlayer->GetFacingDirection() == dfPACKET_MOVE_DIR_LL)
+//    {
+//        left = posX - dfATTACK1_RANGE_X;
+//        right = posX;
+//    }
+//    // 오른쪽을 바라보고 있었다면
+//    else
+//    {
+//        left = posX;
+//        right = posX + dfATTACK1_RANGE_X;
+//    }
+//
+//    top = posY - dfATTACK1_RANGE_Y;
+//    bottom = posY + dfATTACK1_RANGE_Y;
+//
+//    for (auto& client : g_clientList)
+//    {
+//        if (client->uid == pSession->uid)
+//            continue;
+//
+//        pPlayer->getPosition(posX, posY);
+//
+//        // 다른 플레이어의 좌표가 공격 범위에 있을 경우
+//        if (posX >= left && posX <= right &&
+//            posY >= top && posY <= bottom)
+//        {
+//            //=====================================================================================================================================
+//            // 3. dfPACKET_SC_DAMAGE 를 브로드캐스팅
+//            //=====================================================================================================================================
+//            // 1명만 데미지를 입도록 함
+//            pPlayer->Damaged(dfATTACK1_DAMAGE);
+//
+//            SC_DAMAGE_FOR_All(nullptr, pSession->uid, client->uid, pPlayer->GetHp());
+//            break;
+//        }
+//    }
+//
+//    return true;
+//}
+//
+//bool CS_ATTACK2(CSession* pSession, UINT8 direction, UINT16 x, UINT16 y)
+//{
+//    // 클라이언트로 부터 공격 메시지가 들어옴.
+//    // g_clientList를 순회하며 공격 2의 범위를 연산해서 데미지를 넣어줌.
+//    // 1. dfPACKET_SC_ATTACK2 을 브로드캐스팅
+//    // 2. 공격받을 캐릭터를 검색. 검색에 성공하면 3, 4번 절차 진행
+//    // 3. dfPACKET_SC_DAMAGE 를 브로드캐스팅
+//    // 4. 만약 체력이 0 이하로 떨어졌다면 dfPACKET_SC_DELETE_CHARACTER 를 브로드캐스팅하고, 서버에서 삭제할 수 있도록 함
+//
+//    CPlayer* pPlayer = static_cast<CPlayer*>(pSession->pObj);
+//
+//    //=====================================================================================================================================
+//    // 1. dfPACKET_SC_ATTACK2 을 브로드캐스팅
+//    //=====================================================================================================================================
+//    pPlayer->SetPosition(x, y);
+//
+//    SC_ATTACK2_FOR_All(pSession, pSession->uid, pPlayer->GetDirection(), x, y);
+//
+//    //=====================================================================================================================================
+//    // 2. 공격받을 캐릭터를 검색. 검색에 성공하면 3, 4번 절차 진행
+//    //=====================================================================================================================================
+//
+//    // 내가 바라보는 방향에 따라 공격 범위가 달라짐.
+//    UINT16 left, right, top, bottom;
+//    UINT16 posX, posY;
+//    pPlayer->getPosition(posX, posY);
+//
+//    // 왼쪽을 바라보고 있었다면
+//    if (pPlayer->GetFacingDirection() == dfPACKET_MOVE_DIR_LL)
+//    {
+//        left = posX - dfATTACK2_RANGE_X;
+//        right = posX;
+//    }
+//    // 오른쪽을 바라보고 있었다면
+//    else
+//    {
+//        left = posX;
+//        right = posX + dfATTACK2_RANGE_X;
+//    }
+//
+//    top = posY - dfATTACK2_RANGE_Y;
+//    bottom = posY + dfATTACK2_RANGE_Y;
+//
+//    for (auto& client : g_clientList)
+//    {
+//        if (client->uid == pSession->uid)
+//            continue;
+//
+//        pPlayer->getPosition(posX, posY);
+//
+//        // 다른 플레이어의 좌표가 공격 범위에 있을 경우
+//        if (posX >= left && posX <= right &&
+//            posY >= top && posY <= bottom)
+//        {
+//            //=====================================================================================================================================
+//            // 3. dfPACKET_SC_DAMAGE 를 브로드캐스팅
+//            //=====================================================================================================================================
+//            // 1명만 데미지를 입도록 함
+//            pPlayer->Damaged(dfATTACK2_DAMAGE);
+//
+//            SC_DAMAGE_FOR_All(nullptr, pSession->uid, client->uid, pPlayer->GetHp());
+//            break;
+//        }
+//    }
+//
+//    return true;
+//}
+//
+//bool CS_ATTACK3(CSession* pSession, UINT8 direction, UINT16 x, UINT16 y)
+//{
+//    // 클라이언트로 부터 공격 메시지가 들어옴.
+//    // g_clientList를 순회하며 공격 3의 범위를 연산해서 데미지를 넣어줌.
+//    // 1. dfPACKET_SC_ATTACK3 을 브로드캐스팅
+//    // 2. 공격받을 캐릭터를 검색. 검색에 성공하면 3, 4번 절차 진행
+//    // 3. dfPACKET_SC_DAMAGE 를 브로드캐스팅
+//    // 4. 만약 체력이 0 이하로 떨어졌다면 dfPACKET_SC_DELETE_CHARACTER 를 브로드캐스팅하고, 서버에서 삭제할 수 있도록 함
+//
+//    CPlayer* pPlayer = static_cast<CPlayer*>(pSession->pObj);
+//
+//    //=====================================================================================================================================
+//    // 1. dfPACKET_SC_ATTACK3 을 브로드캐스팅
+//    //=====================================================================================================================================
+//    pPlayer->SetPosition(x, y);
+//
+//    SC_ATTACK3_FOR_All(pSession, pSession->uid, pPlayer->GetDirection(), x, y);
+//
+//    //=====================================================================================================================================
+//    // 2. 공격받을 캐릭터를 검색. 검색에 성공하면 3, 4번 절차 진행
+//    //=====================================================================================================================================
+//
+//    // 내가 바라보는 방향에 따라 공격 범위가 달라짐.
+//    UINT16 left, right, top, bottom;
+//    UINT16 posX, posY;
+//    pPlayer->getPosition(posX, posY);
+//
+//    // 왼쪽을 바라보고 있었다면
+//    if (pPlayer->GetFacingDirection() == dfPACKET_MOVE_DIR_LL)
+//    {
+//        left = posX - dfATTACK3_RANGE_X;
+//        right = posX;
+//    }
+//    // 오른쪽을 바라보고 있었다면
+//    else
+//    {
+//        left = posX;
+//        right = posX + dfATTACK3_RANGE_X;
+//    }
+//
+//    top = posY - dfATTACK3_RANGE_Y;
+//    bottom = posY + dfATTACK3_RANGE_Y;
+//
+//    for (auto& client : g_clientList)
+//    {
+//        if (client->uid == pSession->uid)
+//            continue;
+//
+//        pPlayer->getPosition(posX, posY);
+//
+//        // 다른 플레이어의 좌표가 공격 범위에 있을 경우
+//        if (posX >= left && posX <= right &&
+//            posY >= top && posY <= bottom)
+//        {
+//            //=====================================================================================================================================
+//            // 3. dfPACKET_SC_DAMAGE 를 브로드캐스팅
+//            //=====================================================================================================================================
+//            // 1명만 데미지를 입도록 함
+//            pPlayer->Damaged(dfATTACK3_DAMAGE);
+//
+//            SC_DAMAGE_FOR_All(nullptr, pSession->uid, client->uid, pPlayer->GetHp());
+//            break;
+//        }
+//    }
+//
+//    return true;
+//}
+
+void DisconnectSessionProc(CSession* pSession)
+{
+    // 세션이 가지고 있는 오브젝트가 존재하지 않는다면, 애초에 연결을 위한 객체가 생성 되지 않은 것이므로 넘김
+    if (pSession->pObj == nullptr)
+        return;
+
+    CPlayer* pPlayer = static_cast<CPlayer*>(pSession->pObj);
+
+    SC_DELETE_CHARACTER_FOR_All(pSession, pPlayer->m_uID);
+}
