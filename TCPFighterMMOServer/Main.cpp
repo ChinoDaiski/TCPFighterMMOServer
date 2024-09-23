@@ -29,6 +29,11 @@
 //===================================================
 #include "Content.h"
 
+//===================================================
+// 키 입력
+//===================================================
+#include <conio.h>
+
 bool g_bShutdown = false;
 
 void Update(void);
@@ -96,6 +101,9 @@ int main()
     }
 
     // 종료시 현재 서버에 있는 정보 안전하게 DB등에 저장
+
+    // 윈도우 소켓 매니저 정리
+    winSockManager.Cleanup();
 }
 
 // 메인 로직
@@ -109,11 +117,56 @@ void Update(void)
     sessionManager.Update();
 }
 
+bool PressKey(WCHAR checkKey, WCHAR input)
+{
+    return towlower(checkKey) == towlower(input);
+}
 
 // 키보드 입력을 통해 게임을 제어할 시 사용
 void ServerControl(void)
 {
+    //==========================================================
+    // L : 컨트롤 Lock     U : 컨트롤 Unlock      Q : 서버 종료
+    //==========================================================
 
+    static bool bControlMode = false;
+
+    if (_kbhit())
+    {
+        WCHAR ControlKey = _getch();
+
+        if (PressKey(ControlKey, L'U'))
+        {
+            if (!bControlMode)
+            {
+                std::wcout << L"Control Mode : Press Q - Quit\n";
+                std::wcout << L"Control Mode : Press L - Key Lock\n";
+
+                bControlMode = true;
+            }
+        }
+
+        if (PressKey(ControlKey, L'L'))
+        {
+            if (bControlMode)
+            {
+                std::wcout << L"Control Locked. Press U to Unlock Control\n";
+
+                bControlMode = false;
+            }
+        }
+
+        // 컨트롤 중인 경우 확인
+        if (bControlMode)
+        {
+            if (PressKey(ControlKey, L'Q'))
+            {
+                g_bShutdown = true;
+
+                std::wcout << L"Server Shutdown\n";
+            }
+        }
+    }
 }
 
 // 모니터링 정보를 표시, 저장, 전송하는 경우 사용

@@ -13,13 +13,9 @@ int dir[8][2] = {
     {-1, 1}	    // LD
 };
 
-UINT32 CPlayer::g_ID = 0;
-
 CPlayer::CPlayer(UINT16 _x, UINT16 _y, UINT8 _direction, UINT8 _hp) noexcept
 	: CObject{ _x, _y }, m_hp{ _hp }, m_direction{ _direction }
 {
-    m_uID = g_ID;
-    g_ID++;
 }
 
 CPlayer::~CPlayer()

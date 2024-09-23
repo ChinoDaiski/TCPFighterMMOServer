@@ -374,5 +374,5 @@ void DisconnectSessionProc(CSession* pSession)
 
     CPlayer* pPlayer = static_cast<CPlayer*>(pSession->pObj);
 
-    SC_DELETE_CHARACTER_FOR_All(pSession, pPlayer->m_uID);
+    SC_DELETE_CHARACTER_FOR_All(pSession, pPlayer->m_ID);
 }

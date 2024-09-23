@@ -42,10 +42,4 @@ private:
     UINT8 m_speedX;     // 스피드
     UINT8 m_speedY;
     UINT8 m_FlagField;  // 행동 관련 flagField;
-
-public:
-    UINT32 m_uID; // ID
-
-private:
-    static UINT32 g_ID; // ID
 };

@@ -32,9 +32,9 @@ void CNetIOManager::netIOProcess(void)
 
     // select는 한번에 최대 64개까지 처리 가능
     // 접속중인 모든 클라이언트에 대해 SOCKET 체크
-    UINT32 iCSessionSize = g_clientList.size();
+    UINT32 iCSessionSize = g_SessionHashMap.size();
 
-    auto iter = g_clientList.begin();
+    auto iter = g_SessionHashMap.begin();
 
     static UINT32 netProc_RecvCnt = 0;
     static UINT32 netProc_SendCnt = 0;
@@ -49,11 +49,11 @@ void CNetIOManager::netIOProcess(void)
         // begin부터 64개를 돌며 실행
         for (UINT8 i = 0; i < 64; ++i)
         {
-            FD_SET((*iter)->sock, &ReadSet);
+            FD_SET((*iter).second->sock, &ReadSet);
 
             // 만약 보낼 데이터가 있다면 WriteSet에 등록
-            if ((*iter)->sendQ.GetUseSize() > 0)
-                FD_SET((*iter)->sock, &WriteSet);
+            if ((*iter).second->sendQ.GetUseSize() > 0)
+                FD_SET((*iter).second->sock, &WriteSet);
 
             ++iter;
         }
@@ -72,26 +72,26 @@ void CNetIOManager::netIOProcess(void)
             {
                 iter2--;
 
-                if (FD_ISSET((*iter2)->sock, &ReadSet))
+                if (FD_ISSET((*iter2).second->sock, &ReadSet))
                 {
                     --iResult;
 
                     // recv 이벤트 처리. 메시지 수신 및 메시지 분기 로직 처리
-                    if ((*iter2)->isAlive)
+                    if ((*iter2).second->isAlive)
                     {
-                        netProc_Recv((*iter2));
+                        netProc_Recv((*iter2).second);
                         ++netProc_RecvCnt;
                     }
                 }
 
-                if (FD_ISSET((*iter2)->sock, &WriteSet))
+                if (FD_ISSET((*iter2).second->sock, &WriteSet))
                 {
                     --iResult;
 
                     // send 이벤트 처리. 메시지 송신
-                    if ((*iter2)->isAlive)
+                    if ((*iter2).second->isAlive)
                     {
-                        netProc_Send((*iter2));
+                        netProc_Send((*iter2).second);
                         ++netProc_SendCnt;
                     }
                 }
@@ -113,11 +113,11 @@ void CNetIOManager::netIOProcess(void)
     // 남은 사이즈만큼 for문 돌면서 FD_SET 실행
     for (UINT8 i = 0; i < iCSessionSize; ++i)
     {
-        FD_SET((*iter)->sock, &ReadSet);
+        FD_SET((*iter).second->sock, &ReadSet);
 
         // 만약 보낼 데이터가 있다면 WriteSet에 등록
-        if ((*iter)->sendQ.GetUseSize() > 0)
-            FD_SET((*iter)->sock, &WriteSet);
+        if ((*iter).second->sendQ.GetUseSize() > 0)
+            FD_SET((*iter).second->sock, &WriteSet);
 
         ++iter;
     }
@@ -154,26 +154,26 @@ void CNetIOManager::netIOProcess(void)
         {
             iter2--;
 
-            if (FD_ISSET((*iter2)->sock, &ReadSet))
+            if (FD_ISSET((*iter2).second->sock, &ReadSet))
             {
                 --iResult;
 
                 // recv 이벤트 처리. 메시지 수신 및 메시지 분기 로직 처리
-                if ((*iter2)->isAlive)
+                if ((*iter2).second->isAlive)
                 {
-                    netProc_Recv((*iter2));
+                    netProc_Recv((*iter2).second);
                     ++netProc_RecvCnt;
                 }
             }
 
-            if (FD_ISSET((*iter2)->sock, &WriteSet))
+            if (FD_ISSET((*iter2).second->sock, &WriteSet))
             {
                 --iResult;
 
                 // send 이벤트 처리. 메시지 송신
-                if ((*iter2)->isAlive)
+                if ((*iter2).second->isAlive)
                 {
-                    netProc_Send((*iter2));
+                    netProc_Send((*iter2).second);
                     ++netProc_SendCnt;
                 }
             }
@@ -190,25 +190,28 @@ void CNetIOManager::netProc_Accept(void)
 {
     // 클라이언트가 접속했을 때 진행되는 과정
     // 백로그 큐에 접속이 되었음을 감지하고 Accept 시도
-    SOCKET ClientSocket;
+    SOCKET acceptedSocket;
     SOCKADDR_IN ClientAddr;
 
     CWinSockManager& winSockManager = CWinSockManager::GetInstance();
     SOCKET listenSocket = winSockManager.GetListenSocket();
 
     // accept 시도
-    ClientSocket = winSockManager.Accept(ClientAddr);
+    acceptedSocket = winSockManager.Accept(ClientAddr);
 
-    // 세션을 만들어서 m_AcceptSessionList에 넣음
+    // 세션 생성 후 세션 매니저에서 관리
     CSessionManager& sessionManger = CSessionManager::GetInstance();
-    CSession* pSession = createSession(ClientSocket, ClientAddr);
+    CSession* pSession = createSession(acceptedSocket, ClientAddr);
+    g_SessionHashMap.emplace(acceptedSocket, pSession);
 
-    pSession->pObj = m_callbackAcceptCreate();
+    // 세션과 연결된 오브젝트 생성
+    CObject* pObj = m_callbackAcceptCreate();
     pSession->pObj->m_pSession = pSession;
-
-    g_clientList.push_back(pSession);
-
     m_callbackAcceptAfter(pSession->pObj);
+
+    // 생성된 오브젝트 오브젝트 매니저에서 관리
+    static CObjectManager& ObjectManager = CObjectManager::GetInstance();
+    ObjectManager.RegisterObject(pObj);
 }
 
 

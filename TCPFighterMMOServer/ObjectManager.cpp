@@ -10,43 +10,42 @@ CObjectManager::CObjectManager() noexcept
 
 CObjectManager::~CObjectManager() noexcept
 {
-    for (auto& Object : m_ObjectList)
+    for (auto& mapIndex : m_ObjectHashMap)
     {
-        delete Object;
+        delete mapIndex.second;
     }
 
-    m_ObjectList.clear();
+    m_ObjectHashMap.clear();
 }
 
 void CObjectManager::Update(void)
 {
-	for (auto& Object : m_ObjectList)
-		Object->Update();
+    for (auto& mapIndex : m_ObjectHashMap)
+    {
+        mapIndex.second->Update();
+    }
 }
 
 void CObjectManager::LateUpdate(void)
 {
-    auto it = m_ObjectList.begin();
-    while (it != m_ObjectList.end())
+    auto it = m_ObjectHashMap.begin();
+    while (it != m_ObjectHashMap.end())
     {
         // 오브젝트가 비활성화 되었다면
-        if ((*it)->isDead())
-        {
-            NotifyClientDisconnected((*it)->m_pSession); // 세션이 죽었음을 알림
-            
-            delete (*it);                   // 플레이어 삭제
-            it = m_ObjectList.erase(it);    // 리스트에서 iter 삭제
+        if ((*it).second->isDead()) { 
+            NotifyClientDisconnected((*it).second->m_pSession); // 세션이 죽었음을 알림
+
+            delete (*it).second;                // 플레이어 삭제
+            it = m_ObjectHashMap.erase(it);     // 리스트에서 iter 삭제
         }
-        // 활성 중이라면
-        else
-        {
-            (*it)->LateUpdate();
-            ++it;
+        else {
+            (*it).second->LateUpdate();
+            ++it; // 조건에 맞지 않으면 다음 요소로 이동
         }
     }
 }
 
 void CObjectManager::RegisterObject(CObject* pObject)
 {
-    m_ObjectList.push_back(pObject);
+    m_ObjectHashMap.emplace(pObject->m_ID, pObject);
 }

@@ -5,8 +5,12 @@
 #include "WinSockManager.h"
 #include "Object.h"
 
+UINT32 CSession::g_ID = 0;
+
 CSession::CSession()
 {
+    SessionID = g_ID;
+    ++g_ID;
 }
 
 CSession::~CSession()

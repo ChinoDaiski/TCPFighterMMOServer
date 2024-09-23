@@ -29,11 +29,11 @@ private:
     void Bind(UINT16 serverPort, UINT32 serverIP);
     void Listen(UINT32 somaxconn);
     void SetOptions(UINT8 options);
-    void Cleanup() noexcept;
 
 public:
-    void StartServer(PROTOCOL_TYPE type, UINT16 serverPort, UINT8 options = 0, UINT32 serverIP = INADDR_ANY, UINT32 somaxconn = SOMAXCONN_HINT(65535)) noexcept;
     SOCKET Accept(SOCKADDR_IN& ClientAddr) noexcept;
+    void StartServer(PROTOCOL_TYPE type, UINT16 serverPort, UINT8 options = 0, UINT32 serverIP = INADDR_ANY, UINT32 somaxconn = SOMAXCONN_HINT(65535)) noexcept;
+    void Cleanup() noexcept;
 
 public:
     static std::string GetIP(const SOCKADDR_IN& ClientAddr) noexcept;

@@ -4,19 +4,21 @@
 #include <list>
 class CSession;
 
+const size_t MAX_MULTICAST_SESSIONS = 100;
+
 //==========================================================================================================================================
 // Broadcast
 //==========================================================================================================================================
-void BroadcastData(CSession* excludeCSession, PACKET_HEADER* pPacket, UINT32 dataSize);
-void BroadcastData(CSession* excludeCSession, CPacket* pPacket, UINT32 dataSize);
-void BroadcastPacket(CSession* excludeCSession, PACKET_HEADER* pHeader, CPacket* pPacket);
+void BroadcastData(CSession* excludeSession, PACKET_HEADER* pPacket, UINT32 dataSize);
+void BroadcastData(CSession* excludeSession, CPacket* pPacket, UINT32 dataSize);
+void BroadcastPacket(CSession* excludeSession, PACKET_HEADER* pHeader, CPacket* pPacket);
 
 //==========================================================================================================================================
 // Unicast
 //==========================================================================================================================================
-void UnicastData(CSession* includeCSession, PACKET_HEADER* pPacket, UINT32 dataSize);
-void UnicastData(CSession* includeCSession, CPacket* pPacket, UINT32 dataSize);
-void UnicastPacket(CSession* includeCSession, PACKET_HEADER* pHeader, CPacket* pPacket);
+void UnicastData(CSession* includeSession, PACKET_HEADER* pPacket, UINT32 dataSize);
+void UnicastData(CSession* includeSession, CPacket* pPacket, UINT32 dataSize);
+void UnicastPacket(CSession* includeSession, PACKET_HEADER* pHeader, CPacket* pPacket);
 
 //==========================================================================================================================================
 // 생성 / 소멸
@@ -24,8 +26,7 @@ void UnicastPacket(CSession* includeCSession, PACKET_HEADER* pHeader, CPacket* p
 void NotifyClientDisconnected(CSession* disconnectedCSession);
 CSession* createSession(SOCKET ClientSocket, SOCKADDR_IN ClientAddr);
 
-extern std::list<CSession*> g_clientList;   // 서버에 접속한 세션들에 대한 정보
-
+extern std::unordered_map<SOCKET, CSession*> g_SessionHashMap; // 서버에 접속한 세션들에 대한 정보
 
 typedef void(*DisconnectCallback)(CSession* pSession);
 
@@ -45,13 +46,13 @@ public:
     void Update(void);
 
 public:
-    friend void BroadcastData(CSession* excludeCSession, PACKET_HEADER* pPacket, UINT32 dataSize);
-    friend void BroadcastData(CSession* excludeCSession, CPacket* pPacket, UINT32 dataSize);
-    friend void BroadcastPacket(CSession* excludeCSession, PACKET_HEADER* pHeader, CPacket* pPacket);
+    friend void BroadcastData(CSession* excludeSession, PACKET_HEADER* pPacket, UINT32 dataSize);
+    friend void BroadcastData(CSession* excludeSession, CPacket* pPacket, UINT32 dataSize);
+    friend void BroadcastPacket(CSession* excludeSession, PACKET_HEADER* pHeader, CPacket* pPacket);
 
-    friend void UnicastData(CSession* includeCSession, PACKET_HEADER* pPacket, UINT32 dataSize);
-    friend void UnicastData(CSession* includeCSession, CPacket* pPacket, UINT32 dataSize);
-    friend void UnicastPacket(CSession* includeCSession, PACKET_HEADER* pHeader, CPacket* pPacket);
+    friend void UnicastData(CSession* includeSession, PACKET_HEADER* pPacket, UINT32 dataSize);
+    friend void UnicastData(CSession* includeSession, CPacket* pPacket, UINT32 dataSize);
+    friend void UnicastPacket(CSession* includeSession, PACKET_HEADER* pHeader, CPacket* pPacket);
 
 public:
     static void RegisterDisconnectCallback(DisconnectCallback callback) { m_callbackDisconnect = callback; }

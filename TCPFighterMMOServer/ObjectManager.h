@@ -26,8 +26,8 @@ public:
     void RegisterObject(CObject* pObject);
 
 public:
-    std::list<CObject*>& GetObjectList(void) { return m_ObjectList; }
+    inline std::unordered_map<UINT32, CObject*>& GetObjectMap(void) { return m_ObjectHashMap; }
 
 private:
-    std::list<CObject*> m_ObjectList;
+    std::unordered_map<UINT32, CObject*> m_ObjectHashMap;
 };

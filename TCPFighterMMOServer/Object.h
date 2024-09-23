@@ -32,8 +32,12 @@ public:
 
 public:
     CSession* m_pSession;
+    UINT32 m_ID; // ID
 
 protected:
     UINT16 m_x, m_y;
     bool m_bDead;
+
+private:
+    static UINT32 g_ID; // ID
 };
