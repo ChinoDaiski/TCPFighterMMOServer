@@ -32,6 +32,8 @@
 bool g_bShutdown = false;
 
 void Update(void);
+void ServerControl(void);
+void Monitor(void);
 
 int main()
 {
@@ -78,6 +80,12 @@ int main()
             // 게임 로직 업데이트
             if (timerManager.CheckFrame())
                 Update();
+
+            // 키보드 입력을 통해 게임을 제어할 시 사용
+            ServerControl();
+
+            // 모니터링 정보를 표시, 저장, 전송하는 경우 사용
+            Monitor();
         }
         catch (const std::exception& e)
         {
@@ -99,4 +107,17 @@ void Update(void)
 
     CSessionManager& sessionManager = CSessionManager::GetInstance();
     sessionManager.Update();
+}
+
+
+// 키보드 입력을 통해 게임을 제어할 시 사용
+void ServerControl(void)
+{
+
+}
+
+// 모니터링 정보를 표시, 저장, 전송하는 경우 사용
+void Monitor(void)
+{
+
 }
