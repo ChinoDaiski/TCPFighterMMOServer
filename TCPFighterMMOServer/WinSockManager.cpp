@@ -137,6 +137,17 @@ std::string CWinSockManager::GetIP(const SOCKADDR_IN& ClientAddr) noexcept
 
 std::string CWinSockManager::GetIP(const IN_ADDR& ClientInAddr) noexcept
 {
+    /*
+        SOCKADDR_IN SocketAddr;
+        InetPton(AF_INET, L"192.168.10.1", &SocketAddr.sin_addr);
+        SocketAddr.sin_port = htons(80);
+    */
+
+     /*
+        WCHAR szClientIP[16]{ 0, };
+        InetNtop(AF_INET, &ClientInAddr, szClientIP, 16);
+    */
+
     char pAddrBuf[INET_ADDRSTRLEN];
 
     // 바이너리 주소를 사람이 읽을 수 있는 형태로 변환
@@ -145,8 +156,9 @@ std::string CWinSockManager::GetIP(const IN_ADDR& ClientInAddr) noexcept
         DebugBreak();
     }
 
-    char strIP[16];
+    char strIP[17];
     memcpy(strIP, pAddrBuf, sizeof(char) * 16);
+    strIP[16] = '\0';
 
     return std::string{ strIP };
 }
@@ -159,6 +171,33 @@ UINT16 CWinSockManager::GetPort(const SOCKADDR_IN& ClientAddr) noexcept
 UINT16 CWinSockManager::GetPort(const UINT16& port) noexcept
 {
     return ntohs(port);
+}
+
+bool CWinSockManager::DomainToIP(WCHAR* szDomain, IN_ADDR* pAddr)
+{
+    ADDRINFOW* pAddrInfo;
+    SOCKADDR_IN* pSockAddr;
+
+    if (GetAddrInfo(szDomain, L"0", NULL, &pAddrInfo) != 0)
+        return false;
+
+    pSockAddr = reinterpret_cast<SOCKADDR_IN*>(pAddrInfo->ai_addr);
+    *pAddr = pSockAddr->sin_addr;
+    FreeAddrInfo(pAddrInfo);
+
+    return true;
+
+    // 사용법
+    /*
+        SOCKADDR_IN sockAddr;
+        IN_ADDR Addr;
+        memset(&sockAddr, 0, sizeof(sockAddr));
+        DomainToIP(L"google.com", &Addr);
+
+        sockAddr.sin_family = AF_INET;
+        sockAddr.sin_addr = Addr;
+        sockAddr.sin_port = htons(80);
+    */
 }
 
 void CWinSockManager::Cleanup() noexcept

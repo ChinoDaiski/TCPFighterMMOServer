@@ -40,6 +40,7 @@ public:
     static std::string GetIP(const IN_ADDR& ClientInAddr) noexcept;
     static UINT16 GetPort(const SOCKADDR_IN& ClientAddr) noexcept;
     static UINT16 GetPort(const UINT16& ClientInAddr) noexcept;
+    static bool DomainToIP(WCHAR* szDomain, IN_ADDR* pAddr);
 
 public:
     constexpr SOCKET GetListenSocket(void) { return m_listenSocket; }

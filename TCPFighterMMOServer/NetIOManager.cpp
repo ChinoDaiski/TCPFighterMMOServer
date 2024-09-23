@@ -36,7 +36,6 @@ void CNetIOManager::netIOProcess(void)
 
     auto iter = g_clientList.begin();
 
-
     static UINT32 netProc_RecvCnt = 0;
     static UINT32 netProc_SendCnt = 0;
 
