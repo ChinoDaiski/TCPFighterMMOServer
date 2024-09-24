@@ -1,6 +1,7 @@
 #pragma once
 
 #define NOMINMAX
+
 #include <iostream>
 #include <stdexcept>
 
@@ -8,9 +9,9 @@
 #include <WS2tcpip.h>
 #pragma comment(lib, "Ws2_32.lib")
 
+#define _WINSOCKAPI_	// windows.h와 winsock2를 같이 사용할 경우 생기는 문제를 해결하기 위해 사용하는 define문
 #include <Windows.h>
 #pragma comment(lib, "Winmm.lib")
-
 
 //===================================================
 // 자료구조

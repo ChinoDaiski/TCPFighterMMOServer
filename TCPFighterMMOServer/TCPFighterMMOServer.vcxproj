@@ -129,6 +129,7 @@
   <ItemGroup>
     <ClCompile Include="Content.cpp" />
     <ClCompile Include="CustomException.cpp" />
+    <ClCompile Include="Sinleton.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MakePacket.cpp" />
     <ClCompile Include="NetIOManager.cpp" />
@@ -138,6 +139,8 @@
     <ClCompile Include="PacketProc.cpp" />
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Sector.cpp" />
+    <ClCompile Include="SectorManager.cpp" />
     <ClCompile Include="Session.cpp" />
     <ClCompile Include="SessionManager.cpp" />
     <ClCompile Include="StackWalker.cpp" />
@@ -158,6 +161,8 @@
     <ClInclude Include="Player.h" />
     <ClInclude Include="Protocol.h" />
     <ClInclude Include="RingBuffer.h" />
+    <ClInclude Include="Sector.h" />
+    <ClInclude Include="SectorManager.h" />
     <ClInclude Include="Session.h" />
     <ClInclude Include="SessionManager.h" />
     <ClInclude Include="Singleton.h" />

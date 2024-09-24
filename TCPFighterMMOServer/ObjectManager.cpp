@@ -4,6 +4,8 @@
 #include "Session.h"
 #include "SessionManager.h"
 
+#include "SectorManager.h"
+
 CObjectManager::CObjectManager() noexcept
 {
 }

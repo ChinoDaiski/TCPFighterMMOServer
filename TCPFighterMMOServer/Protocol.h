@@ -6,8 +6,7 @@
 
 #include "Defines.h"
 
-#define dfNETWORK_PORT		6000
-#define dfPACKET_CODE		0x89
+#define dfNETWORK_PORT		20000
 #define dfMAX_PACKET_SIZE	10
 
 #pragma pack(push, 1)   
@@ -40,6 +39,10 @@ enum class PACKET_TYPE : UINT8
 	SC_ATTACK3 = 25,
 
 	SC_DAMAGE = 30,
+
+	SC_SYNC = 251,
+	CS_ECHO = 252,
+	SC_ECHO = 253,
 
 	END
 };
@@ -362,7 +365,6 @@ enum class PACKET_TYPE : UINT8
 
 
 // 사용안함...
-#define	dfPACKET_CS_SYNC						250
 //---------------------------------------------------------------
 // 동기화를 위한 패킷					Client -> Server
 //
@@ -371,9 +373,13 @@ enum class PACKET_TYPE : UINT8
 //	2	-	Y
 //
 //---------------------------------------------------------------
+#define	dfPACKET_CS_SYNC						250
+/*
+	UINT16		X
+	UINT16		Y
+*/
 
 
-#define	dfPACKET_SC_SYNC						251
 //---------------------------------------------------------------
 // 동기화를 위한 패킷					Server -> Client
 //
@@ -384,4 +390,38 @@ enum class PACKET_TYPE : UINT8
 //	2	-	X
 //	2	-	Y
 //
-//-----------------------------------------------------------
+//---------------------------------------------------------------
+#define	dfPACKET_SC_SYNC						251
+/*
+	UINT32		ID
+	UINT16		X
+	UINT16		Y
+*/
+
+
+
+
+
+//---------------------------------------------------------------
+// Echo 용 패킷					Client -> Server
+//
+//	4	-	Time
+//
+//---------------------------------------------------------------
+#define	dfPACKET_CS_ECHO						252
+/*
+	UINT32		Time
+*/
+
+
+//---------------------------------------------------------------
+// Echo 응답 패킷				Server -> Client
+//
+//	4	-	Time
+//
+//---------------------------------------------------------------
+#define	dfPACKET_SC_ECHO						253
+/*
+	UINT32		Time
+*/
+

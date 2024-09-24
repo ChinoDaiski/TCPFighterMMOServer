@@ -1,6 +1,9 @@
 
 #include "pch.h"
 #include "Player.h"
+#include "SessionManager.h"
+#include "MakePacket.h"
+#include "SectorManager.h"
 
 int dir[8][2] = {
     {-1, 0},	// LL
@@ -24,6 +27,8 @@ CPlayer::~CPlayer()
 
 void CPlayer::Update(void)
 { 
+    __super::Update();
+
     if (!m_FlagField)
         return;
 
@@ -33,6 +38,7 @@ void CPlayer::Update(void)
 
 void CPlayer::LateUpdate(void)
 {
+    __super::LateUpdate();
 }
 
 void CPlayer::Move(void)
@@ -121,4 +127,42 @@ bool CPlayer::isBitSet(UINT8 flag)
 void CPlayer::SetFlagField(UINT8 pField)
 {
     m_FlagField = pField;
+}
+
+void SendCreationPacketBetween(CObject* pObjectA, CObject* pObjectB)
+{
+    CPlayer* pPlayerA = static_cast<CPlayer*>(pObjectA);
+    CPlayer* pPlayerB = static_cast<CPlayer*>(pObjectB);
+
+    // A에게 B에 대한 정보를 삭제하는 패킷을 전송
+    SC_DELETE_CHARACTER_FOR_SINGLE(pPlayerA->m_pSession, pPlayerB->m_ID);
+
+    // B에게 A에 대한 정보를 삭제하는 패킷을 전송
+    SC_DELETE_CHARACTER_FOR_SINGLE(pPlayerB->m_pSession, pPlayerA->m_ID);
+}
+
+void SendDestructionPacketBetween(CObject* pObjectA, CObject* pObjectB)
+{
+    CPlayer* pPlayerA = static_cast<CPlayer*>(pObjectA);
+    CPlayer* pPlayerB = static_cast<CPlayer*>(pObjectB);
+
+    // A에게 B에 대한 정보를 생성하는 패킷을 전송
+    SC_CREATE_MY_CHARACTER_FOR_SINGLE(pPlayerA->m_pSession, pPlayerB->m_ID, pPlayerB->m_direction, pPlayerB->m_x, pPlayerB->m_y, pPlayerB->m_hp);
+
+    // B가 움직이고 있다면
+    if (pPlayerB->m_FlagField & FLAG_MOVING)
+    {
+        // A에게 B가 움직인다고 보냄
+        SC_MOVE_START_FOR_SINGLE(pPlayerA->m_pSession, pPlayerB->m_ID, pPlayerB->m_direction, pPlayerB->m_x, pPlayerB->m_y);
+    }
+
+    // B에게 A에 대한 정보를 생성하는 패킷을 전송
+    SC_CREATE_MY_CHARACTER_FOR_SINGLE(pPlayerB->m_pSession, pPlayerA->m_ID, pPlayerA->m_direction, pPlayerA->m_x, pPlayerA->m_y, pPlayerA->m_hp);
+
+    // A가 움직이고 있다면
+    if (pPlayerA->m_FlagField & FLAG_MOVING)
+    {
+        // B에게 A가 움직인다고 보냄
+        SC_MOVE_START_FOR_SINGLE(pPlayerB->m_pSession, pPlayerA->m_ID, pPlayerA->m_direction, pPlayerA->m_x, pPlayerA->m_y);
+    }
 }

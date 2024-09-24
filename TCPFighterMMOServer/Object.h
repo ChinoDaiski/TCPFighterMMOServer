@@ -33,6 +33,8 @@ public:
 public:
     CSession* m_pSession;
     UINT32 m_ID; // ID
+    POINT m_preSectorPos;
+    POINT m_curSectorPos;
 
 protected:
     UINT16 m_x, m_y;

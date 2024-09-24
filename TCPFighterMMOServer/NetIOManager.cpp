@@ -320,7 +320,7 @@ void CNetIOManager::netProc_Recv(CSession* pSession)
         int retVal = pSession->recvQ.Peek(reinterpret_cast<char*>(&header), headerSize);
 
         // 3. header의 Code 부분 확인. CRC 확인으로 이상한 값이 있으면 disconnect 처리
-        if (header.byCode != dfPACKET_CODE)
+        if (header.byCode != dfNETWORK_PACKET_CODE)
         {
             NotifyClientDisconnected(pSession);
             break;

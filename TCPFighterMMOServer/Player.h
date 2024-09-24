@@ -5,6 +5,9 @@
 #define FLAG_MOVING         0x01
 #define FLAG_DEAD           0x02
 
+void SendCreationPacketBetween(CObject*, CObject*);
+void SendDestructionPacketBetween(CObject*, CObject*);
+
 class CPlayer : public CObject {
 public:
     explicit CPlayer(UINT16 _x, UINT16 _y, UINT8 _direction, UINT8 _hp) noexcept;
@@ -14,6 +17,12 @@ public:
     virtual void Update(void) override;
     virtual void LateUpdate(void) override;
     virtual void Move(void) override;
+
+public:
+    // 나중에 플레이어를 제외한 다른 오브젝트가 추가되면 이 함수들을 CObject에 넣고, 상속받은 class들이 오버라이딩해서 관련 내용을 작성하면 된다.
+    // 일단 플레이어만 있으니 이렇게 작성.
+    friend void SendCreationPacketBetween(CObject*, CObject*);
+    friend void SendDestructionPacketBetween(CObject*, CObject*);
 
 public:
     // Getter 함수

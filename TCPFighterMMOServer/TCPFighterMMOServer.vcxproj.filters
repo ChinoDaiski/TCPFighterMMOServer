@@ -69,6 +69,12 @@
     <Filter Include="소스 파일\04. Content">
       <UniqueIdentifier>{22356c94-163c-4a66-84c4-77820e424b30}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\01. Manager\05. SectorMgr">
+      <UniqueIdentifier>{43711edb-3044-426d-ab12-aedff0cba4bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\01. Manager\05. SectorMgr\Sector">
+      <UniqueIdentifier>{087773e7-89a4-4ef9-a994-7338bbea9fb0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CustomException.cpp">
@@ -118,6 +124,15 @@
     </ClCompile>
     <ClCompile Include="Content.cpp">
       <Filter>소스 파일\04. Content</Filter>
+    </ClCompile>
+    <ClCompile Include="SectorManager.cpp">
+      <Filter>소스 파일\01. Manager\05. SectorMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="Sector.cpp">
+      <Filter>소스 파일\01. Manager\05. SectorMgr\Sector</Filter>
+    </ClCompile>
+    <ClCompile Include="Sinleton.cpp">
+      <Filter>소스 파일\01. Manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -177,6 +192,12 @@
     </ClInclude>
     <ClInclude Include="Content.h">
       <Filter>소스 파일\04. Content</Filter>
+    </ClInclude>
+    <ClInclude Include="SectorManager.h">
+      <Filter>소스 파일\01. Manager\05. SectorMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="Sector.h">
+      <Filter>소스 파일\01. Manager\05. SectorMgr\Sector</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

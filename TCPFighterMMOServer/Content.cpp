@@ -4,9 +4,11 @@
 #include "Player.h"
 #include "MakePacket.h"
 #include "ObjectManager.h"
+#include "SectorManager.h"
 
 CObject* CreateAcceptObject(void)
 {
+    // 오브젝트 생성 및 오브젝트를 섹터에 등록
 	CObject* pObj = new CPlayer(
 		rand() % (dfRANGE_MOVE_RIGHT - dfRANGE_MOVE_LEFT) + dfRANGE_MOVE_LEFT,
 		rand() % (dfRANGE_MOVE_BOTTOM - dfRANGE_MOVE_TOP) + dfRANGE_MOVE_TOP,

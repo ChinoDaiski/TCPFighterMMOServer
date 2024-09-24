@@ -1,3 +1,5 @@
+
+#include "pch.h"
 #include "TimerManager.h"
 
 //#define CHECK_FPS
