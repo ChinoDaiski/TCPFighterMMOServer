@@ -5,6 +5,8 @@
 #include "SectorManager.h"
 #include "ObjectManager.h"
 
+#include "Player.h"
+
 static CSectorManager& sectorManager = CSectorManager::GetInstance();
 static CObjectManager& objectManager = CObjectManager::GetInstance();
 

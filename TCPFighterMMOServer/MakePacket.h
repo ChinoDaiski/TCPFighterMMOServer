@@ -42,3 +42,7 @@ void SC_DAMAGE_FOR_AROUND(CSession* pSession, CSector* pSector, UINT32 AttackID,
 void SC_ECHO_FOR_All(CSession* pSession, UINT32 time);
 void SC_ECHO_FOR_SINGLE(CSession* pSession, UINT32 time);
 void SC_ECHO_FOR_AROUND(CSession* pSession, CSector* pSector, UINT32 time);
+
+void SC_SYNC_FOR_All(CSession* pSession, UINT32 ID, UINT16 X, UINT16 Y);
+void SC_SYNC_FOR_SINGLE(CSession* pSession, UINT32 ID, UINT16 X, UINT16 Y);
+void SC_SYNC_FOR_AROUND(CSession* pSession, CSector* pSector, UINT32 ID, UINT16 X, UINT16 Y);

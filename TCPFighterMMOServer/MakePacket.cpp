@@ -589,3 +589,61 @@ void SC_ECHO_FOR_AROUND(CSession* pSession, CSector* pSector, UINT32 time)
         }
     }
 }
+
+void SC_SYNC_FOR_All(CSession* pSession, UINT32 ID, UINT16 X, UINT16 Y)
+{
+    PACKET_HEADER header;
+    CPacket Packet;
+
+    Packet << ID;
+    Packet << X;
+    Packet << Y;
+
+    header.byCode = dfNETWORK_PACKET_CODE;
+    header.bySize = Packet.GetDataSize();
+    header.byType = dfPACKET_SC_SYNC;
+
+
+    BroadcastPacket(pSession, &header, &Packet);
+}
+
+void SC_SYNC_FOR_SINGLE(CSession* pSession, UINT32 ID, UINT16 X, UINT16 Y)
+{
+    PACKET_HEADER header;
+    CPacket Packet;
+
+    Packet << ID;
+    Packet << X;
+    Packet << Y;
+
+    header.byCode = dfNETWORK_PACKET_CODE;
+    header.bySize = Packet.GetDataSize();
+    header.byType = dfPACKET_SC_SYNC;
+
+    UnicastPacket(pSession, &header, &Packet);
+}
+
+void SC_SYNC_FOR_AROUND(CSession* pSession, CSector* pSector, UINT32 ID, UINT16 X, UINT16 Y)
+{
+    PACKET_HEADER header;
+    CPacket Packet;
+
+    Packet << ID;
+    Packet << X;
+    Packet << Y;
+
+    header.byCode = dfNETWORK_PACKET_CODE;
+    header.bySize = Packet.GetDataSize();
+    header.byType = dfPACKET_SC_SYNC;
+
+    for (auto& Sector : pSector->GetAroundSectorList())
+    {
+        for (auto& Object : Sector->GetSectorObjectMap())
+        {
+            if (pSession == Object.second->m_pSession)
+                continue;
+
+            UnicastPacket(Object.second->m_pSession, &header, &Packet);
+        }
+    }
+}

@@ -40,6 +40,7 @@ enum class PACKET_TYPE : UINT8
 
 	SC_DAMAGE = 30,
 
+	CS_SYNC = 250,
 	SC_SYNC = 251,
 	CS_ECHO = 252,
 	SC_ECHO = 253,

@@ -28,9 +28,9 @@
 //---------------------------------------------------------------
 // 공격 데미지.
 //---------------------------------------------------------------
-#define dfATTACK1_DAMAGE		5
-#define dfATTACK2_DAMAGE		5
-#define dfATTACK3_DAMAGE		5
+#define dfATTACK1_DAMAGE		1
+#define dfATTACK2_DAMAGE		2
+#define dfATTACK3_DAMAGE		3
 
 
 //-----------------------------------------------------------------

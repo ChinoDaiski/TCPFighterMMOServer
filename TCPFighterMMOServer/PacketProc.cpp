@@ -92,7 +92,18 @@ bool PacketProc(CSession* pSession, PACKET_TYPE packetType, CPacket* pPacket)
 
         return CS_ECHO(pSession, Time);
     }
-        break;
+    break;
+    case PACKET_TYPE::CS_SYNC:
+    {
+        UINT16 X;
+        UINT16 Y;
+
+        *pPacket >> X;
+        *pPacket >> Y;
+
+        return CS_SYNC(pSession, X, Y);
+    }
+    break;
     default:
         return false;
         break;
@@ -121,14 +132,20 @@ bool CS_MOVE_START(CSession* pSession, UINT8 direction, UINT16 x, UINT16 y)
         std::abs(posY - y) > dfERROR_RANGE
         )
     {
-        NotifyClientDisconnected(pSession);
+        SC_SYNC_FOR_SINGLE(pSession, pPlayer->m_ID, posX, posY);
+        
+        // 클라로 부터 온 위치를 믿어줌
+        pPlayer->SetPosition(posX, posY);
+
+        //NotifyClientDisconnected(pSession);
+
+
 
         // 로그 찍을거면 여기서 찍을 것
-        int gapX = std::abs(posX - x);
-        int gapY = std::abs(posY - y);
-        //DebugBreak();
+        /*int gapX = std::abs(posX - x);
+        int gapY = std::abs(posY - y);*/
 
-        return false;
+        //return false;
     }
 
     // ==========================================================================================================
@@ -402,6 +419,13 @@ bool CS_ATTACK3(CSession* pSession, UINT8 direction, UINT16 x, UINT16 y)
 bool CS_ECHO(CSession* pSession, UINT32 time)
 {
     SC_ECHO_FOR_SINGLE(pSession, time);
+
+    return true;
+}
+
+bool CS_SYNC(CSession* pSession, UINT16 x, UINT16 y)
+{
+    // 아무것도 없음
 
     return true;
 }

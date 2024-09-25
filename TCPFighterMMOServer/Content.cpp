@@ -11,8 +11,8 @@ CObject* CreateAcceptObject(void)
 {
     // 오브젝트 생성 및 오브젝트를 섹터에 등록
     CObject* pObj = new CPlayer(
-        rand() % (dfRANGE_MOVE_RIGHT - dfRANGE_MOVE_LEFT) + dfRANGE_MOVE_LEFT,  // rand() % 500 + 100,
-        rand() % (dfRANGE_MOVE_BOTTOM - dfRANGE_MOVE_TOP) + dfRANGE_MOVE_TOP,   // rand() % 500 + 100,
+        rand() % (dfRANGE_MOVE_RIGHT - dfRANGE_MOVE_LEFT - 10) + dfRANGE_MOVE_LEFT + 10,  // rand() % 500 + 100,
+        rand() % (dfRANGE_MOVE_BOTTOM - dfRANGE_MOVE_TOP - 10) + dfRANGE_MOVE_TOP + 10,   // rand() % 500 + 100,
         dfPACKET_MOVE_DIR_LL,
         100
     );
