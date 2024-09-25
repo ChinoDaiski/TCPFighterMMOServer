@@ -2,6 +2,11 @@
 #include "WinSockManager.h"
 #include "SessionManager.h"
 #include "Packet.h"
+#include "SectorManager.h"
+#include "ObjectManager.h"
+
+static CSectorManager& sectorManager = CSectorManager::GetInstance();
+static CObjectManager& objectManager = CObjectManager::GetInstance();
 
 std::unordered_map<SOCKET, CSession*> g_SessionHashMap; // 서버에 접속한 세션들에 대한 정보
 
@@ -27,6 +32,9 @@ void CSessionManager::Update(void)
         {
             // 컨텐츠에서 넣어준 함수 호출
             m_callbackDisconnect((*it).second);
+
+            sectorManager.DeleteObjectFromSector((*it).second->pObj); // 섹터 매니저에서 삭제
+            objectManager.DeleteObject((*it).second->pObj); // 오브젝트 매니저에서 삭제
 
             // 제거
             closesocket((*it).second->sock);
@@ -112,11 +120,11 @@ void BroadcastPacket(CSession* excludeSession, PACKET_HEADER* pHeader, CPacket* 
 // 클라이언트 연결이 끊어진 경우에 호출되는 함수
 void NotifyClientDisconnected(CSession* disconnectedCSession)
 {
-    // 만약 이미 죽었다면 NotifyClientDisconnected가 호출되었던 상태이므로 중복인 상태. 체크할 것.
-    if (disconnectedCSession->isAlive == false)
-    {
-        DebugBreak();
-    }
+    //// 만약 이미 죽었다면 NotifyClientDisconnected가 호출되었던 상태이므로 중복인 상태. 체크할 것.
+    //if (disconnectedCSession->isAlive == false)
+    //{
+    //    DebugBreak();
+    //}
 
     disconnectedCSession->isAlive = false;
 }

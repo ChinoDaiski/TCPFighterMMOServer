@@ -21,6 +21,8 @@ public:
     CSectorManager& operator=(const CSectorManager&) = delete;
 
 public:
+    CSector* GetSectorInfo(UINT8 posX, UINT8 poxY) { return m_Sectors[poxY][posX]; }
+
     // 위치 정보를 인자로 받아 현재 있는 섹터의 인덱스를 반환하는 함수
     static std::pair<UINT8, UINT8> GetSectorIndexFromWorldCoords(UINT16 prePosX, UINT16 prePosY);
 
@@ -34,6 +36,7 @@ public:
 
 public:
     void RegisterObjectToSector(CObject* pObject);
+    void DeleteObjectFromSector(CObject* pObject);
 
 public:
     static void RegisterCreateSectorObjectCallback(CreateSectorObjectCallback callback) { m_callbackCreateSector = callback; }

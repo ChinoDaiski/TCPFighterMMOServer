@@ -17,6 +17,8 @@ CSector::CSector(UINT16 posX, UINT16 posY) noexcept
 
 CSector::~CSector(void)
 {
+	m_aroundSectorlist.clear();
+	m_sectorObjectMap.clear();
 }
 
 void CSector::RegisterObject(CObject* pObject)
@@ -26,14 +28,14 @@ void CSector::RegisterObject(CObject* pObject)
 
 void CSector::DeleteObject(CObject* pObject)
 {
-#ifdef _DEBUG
 	auto iter = m_sectorObjectMap.find(pObject->m_ID);
 
-	if (iter != m_sectorObjectMap.end())
+#ifdef _DEBUG
+	if (iter == m_sectorObjectMap.end())
 	{
 		DebugBreak();
 	}
 #endif // _DEBUG
 
-	m_sectorObjectMap.erase(pObject->m_ID);
+	m_sectorObjectMap.erase(iter);
 }

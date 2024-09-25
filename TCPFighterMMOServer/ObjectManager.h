@@ -24,6 +24,7 @@ public:
 
 public:
     void RegisterObject(CObject* pObject);
+    void DeleteObject(CObject* pObject);
 
 public:
     inline std::unordered_map<UINT32, CObject*>& GetObjectMap(void) { return m_ObjectHashMap; }

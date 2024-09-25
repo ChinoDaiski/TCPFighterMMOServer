@@ -206,8 +206,13 @@ void CNetIOManager::netProc_Accept(void)
 
     // 세션과 연결된 오브젝트 생성
     CObject* pObj = m_callbackAcceptCreate();
-    pSession->pObj->m_pSession = pSession;
-    m_callbackAcceptAfter(pSession->pObj);
+
+    // 오브젝트에 세션 정보 등록
+    pObj->m_pSession = pSession;
+    pSession->pObj = pObj;
+
+    // 오브젝트 생성 이후 처리되어야할 함수 호출
+    m_callbackAcceptAfter(pObj);
 
     // 생성된 오브젝트 오브젝트 매니저에서 관리
     static CObjectManager& ObjectManager = CObjectManager::GetInstance();

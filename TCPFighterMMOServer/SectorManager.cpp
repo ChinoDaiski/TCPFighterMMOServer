@@ -15,6 +15,17 @@ UINT16 CSectorManager::sectorHeight = 0;
 void (*CSectorManager::m_callbackCreateSector)(CObject*, CObject*) = nullptr; // 초기화
 void (*CSectorManager::m_callbackDeleteSector)(CObject*, CObject*) = nullptr; // 초기화
 
+int direction[8][2] = {
+    {-1, 0},	// LL
+    {-1, -1},	// LU
+    {0, -1},	// UU
+    {1, -1},	// RU
+    {1, 0},		// RR
+    {1, 1},		// RD
+    {0, 1},		// DD
+    {-1, 1}	    // LD
+};
+
 CSectorManager::CSectorManager() noexcept
 {
 	for (UINT8 i = 0; i < dfSECTOR_HEIGHT_CNT; ++i)
@@ -24,6 +35,41 @@ CSectorManager::CSectorManager() noexcept
 			m_Sectors[i][j] = new CSector(i, j);
 		}
 	}
+
+    UINT8 posX, posY;
+    for (UINT8 i = 0; i < dfSECTOR_HEIGHT_CNT; ++i)
+    {
+        for (UINT8 j = 0; j < dfSECTOR_WIDTH_CNT; ++j)
+        {
+            for (UINT8 k = 0; k < 8; ++k)
+            {
+                posX = j + direction[k][0];
+                posY = i + direction[k][1];
+
+                if (
+                    (0 <= posX && posX < dfSECTOR_WIDTH_CNT) &&
+                    (0 <= posY && posY < dfSECTOR_HEIGHT_CNT)
+                    )
+                {
+                    m_Sectors[i][j]->InsertAroundSector(m_Sectors[posY][posX]);
+                }
+            }
+
+            m_Sectors[i][j]->InsertAroundSector(m_Sectors[i][j]);
+        }
+    }
+
+    // 섹터에 들어가 있는 주위 섹터 갯수 (자기 포함)을 확인
+    /*
+    for (UINT8 i = 0; i < dfSECTOR_HEIGHT_CNT; ++i)
+    {
+        for (UINT8 j = 0; j < dfSECTOR_WIDTH_CNT; ++j)
+        {
+            std::cout << m_Sectors[i][j]->GetAroundSectorList().size();
+        }
+        std::cout << "\n";
+    }
+    */
 
 	sectorWidth = (dfRANGE_MOVE_RIGHT - dfRANGE_MOVE_LEFT) / dfSECTOR_WIDTH_CNT;
 	sectorHeight = (dfRANGE_MOVE_BOTTOM - dfRANGE_MOVE_TOP) / dfSECTOR_HEIGHT_CNT;
@@ -56,8 +102,8 @@ void CSectorManager::CalculateSectorChanges(CObject* pObject)
         m_sectorsToAdd.clear();
         m_sectorsToDelete.clear();
 
-        UINT8 moveDirX = pObject->m_curSectorPos.x - pObject->m_preSectorPos.x;
-        UINT8 moveDirY = pObject->m_curSectorPos.y - pObject->m_preSectorPos.y;
+        int moveDirX = pObject->m_curSectorPos.x - pObject->m_preSectorPos.x;
+        int moveDirY = pObject->m_curSectorPos.y - pObject->m_preSectorPos.y;
 
         // 65536... 가로 세로 월드 위치 범위가 이를 넘어가진 않겠지?
         UINT16 x = pObject->m_preSectorPos.x;
@@ -213,7 +259,7 @@ void CSectorManager::ProcessSectorObjectPackets(CObject* pMovingObject)
             m_callbackDeleteSector(pMovingObject, pSectorObject);
         }
     }
-    m_Sectors[pMovingObject->m_preSectorPos.y][pMovingObject->m_preSectorPos.y]->DeleteObject(pMovingObject);
+    m_Sectors[pMovingObject->m_preSectorPos.y][pMovingObject->m_preSectorPos.x]->DeleteObject(pMovingObject);
 
     // 생성되어야하는 섹터들이 가지고 있는 오브젝트들에게 내 오브젝트 정보 생성 패킷을 보내고, 내 오브젝트에게 해당 섹터들이 가지고 있는 오브젝트들 생성 패킷을 주입
     // 생성 패킷을 보낼 때 내 오브젝트의 상태도 함께 보낸다. 마찬가지로 생성이 되어야하는 오브젝트들 정보를 받을 때 해당 오브젝트들의 상태로 주입 받음.
@@ -227,7 +273,7 @@ void CSectorManager::ProcessSectorObjectPackets(CObject* pMovingObject)
             m_callbackCreateSector(pMovingObject, pSectorObject);
         }
     }
-    m_Sectors[pMovingObject->m_preSectorPos.y][pMovingObject->m_preSectorPos.y]->RegisterObject(pMovingObject);
+    m_Sectors[pMovingObject->m_curSectorPos.y][pMovingObject->m_curSectorPos.x]->RegisterObject(pMovingObject);
 }
 
 void CSectorManager::RegisterObjectToSector(CObject* pObject)
@@ -240,4 +286,11 @@ void CSectorManager::RegisterObjectToSector(CObject* pObject)
     pObject->m_curSectorPos.y = curIndex.second;
 
     m_Sectors[pObject->m_curSectorPos.y][pObject->m_curSectorPos.x]->RegisterObject(pObject);
+}
+
+void CSectorManager::DeleteObjectFromSector(CObject* pObject)
+{
+    // 현재 오브젝트의 정보를 받아 섹터에서 삭제
+    UINT16 posX, posY;
+    m_Sectors[pObject->m_curSectorPos.y][pObject->m_curSectorPos.x]->DeleteObject(pObject);
 }

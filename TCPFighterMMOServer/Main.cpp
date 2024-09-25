@@ -58,7 +58,7 @@ int main()
     //=====================================================================================================================================
     CTimerManager& timerManager = CTimerManager::GetInstance();
 
-    timerManager.InitTimer(50);
+    timerManager.InitTimer(25);
 
     //=====================================================================================================================================
     // recv 한 프로토콜을 처리하는 함수 등록
@@ -78,6 +78,8 @@ int main()
     //=====================================================================================================================================
     CSectorManager::RegisterCreateSectorObjectCallback(SendCreationPacketBetween);
     CSectorManager::RegisterDeleteSectorObjectCallback(SendDestructionPacketBetween);
+
+    CSectorManager::GetInstance();
 
     //=====================================================================================================================================
     // 메인 로직
@@ -117,10 +119,11 @@ int main()
 void Update(void)
 {
     CObjectManager& objectManager = CObjectManager::GetInstance();
+    CSessionManager& sessionManager = CSessionManager::GetInstance();
+
     objectManager.Update();
     objectManager.LateUpdate();
 
-    CSessionManager& sessionManager = CSessionManager::GetInstance();
     sessionManager.Update();
 }
 

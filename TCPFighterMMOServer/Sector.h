@@ -15,6 +15,12 @@ public:
 	void RegisterObject(CObject* pObject);
 	void DeleteObject(CObject* pObject);
 
+public:
+	const std::list<CSector*>& GetAroundSectorList(void) { return m_aroundSectorlist; }
+
+public:
+	void InsertAroundSector(CSector* pSector) { m_aroundSectorlist.push_back(pSector); }
+
 private:
 	// 섹터별로 들고 있는 오브젝트 정보
 	std::unordered_map<UINT32, CObject*> m_sectorObjectMap;
@@ -22,6 +28,9 @@ private:
 private:
 	// UINT8이기 때문에 인덱스 값을 0 ~ 255까지만 받을 수 있다. 추가시 오버플로우 주의
 	UINT8 m_posX;
-	UINT8 m_posY;
+	UINT8 m_posY; 
+
+private:
+	std::list<CSector*> m_aroundSectorlist;	// 주위에 있는 섹터 정보
 };
 

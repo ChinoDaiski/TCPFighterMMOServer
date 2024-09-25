@@ -49,10 +49,10 @@ void CPlayer::Move(void)
 
     // 범위 검사
     if (
-        (resultX > dfRANGE_MOVE_RIGHT) ||
-        (resultX < dfRANGE_MOVE_LEFT) ||
-        (resultY > dfRANGE_MOVE_BOTTOM) ||
-        (resultY < dfRANGE_MOVE_TOP)
+        (resultX >= dfRANGE_MOVE_RIGHT) ||
+        (resultX <= dfRANGE_MOVE_LEFT) ||
+        (resultY >= dfRANGE_MOVE_BOTTOM) ||
+        (resultY <= dfRANGE_MOVE_TOP)
         )
         return;
     // 범위 검사 통과시
@@ -134,20 +134,8 @@ void SendCreationPacketBetween(CObject* pObjectA, CObject* pObjectB)
     CPlayer* pPlayerA = static_cast<CPlayer*>(pObjectA);
     CPlayer* pPlayerB = static_cast<CPlayer*>(pObjectB);
 
-    // A에게 B에 대한 정보를 삭제하는 패킷을 전송
-    SC_DELETE_CHARACTER_FOR_SINGLE(pPlayerA->m_pSession, pPlayerB->m_ID);
-
-    // B에게 A에 대한 정보를 삭제하는 패킷을 전송
-    SC_DELETE_CHARACTER_FOR_SINGLE(pPlayerB->m_pSession, pPlayerA->m_ID);
-}
-
-void SendDestructionPacketBetween(CObject* pObjectA, CObject* pObjectB)
-{
-    CPlayer* pPlayerA = static_cast<CPlayer*>(pObjectA);
-    CPlayer* pPlayerB = static_cast<CPlayer*>(pObjectB);
-
     // A에게 B에 대한 정보를 생성하는 패킷을 전송
-    SC_CREATE_MY_CHARACTER_FOR_SINGLE(pPlayerA->m_pSession, pPlayerB->m_ID, pPlayerB->m_direction, pPlayerB->m_x, pPlayerB->m_y, pPlayerB->m_hp);
+    SC_CREATE_OTHER_CHARACTER_FOR_SINGLE(pPlayerA->m_pSession, pPlayerB->m_ID, pPlayerB->m_direction, pPlayerB->m_x, pPlayerB->m_y, pPlayerB->m_hp);
 
     // B가 움직이고 있다면
     if (pPlayerB->m_FlagField & FLAG_MOVING)
@@ -157,7 +145,7 @@ void SendDestructionPacketBetween(CObject* pObjectA, CObject* pObjectB)
     }
 
     // B에게 A에 대한 정보를 생성하는 패킷을 전송
-    SC_CREATE_MY_CHARACTER_FOR_SINGLE(pPlayerB->m_pSession, pPlayerA->m_ID, pPlayerA->m_direction, pPlayerA->m_x, pPlayerA->m_y, pPlayerA->m_hp);
+    SC_CREATE_OTHER_CHARACTER_FOR_SINGLE(pPlayerB->m_pSession, pPlayerA->m_ID, pPlayerA->m_direction, pPlayerA->m_x, pPlayerA->m_y, pPlayerA->m_hp);
 
     // A가 움직이고 있다면
     if (pPlayerA->m_FlagField & FLAG_MOVING)
@@ -165,4 +153,16 @@ void SendDestructionPacketBetween(CObject* pObjectA, CObject* pObjectB)
         // B에게 A가 움직인다고 보냄
         SC_MOVE_START_FOR_SINGLE(pPlayerB->m_pSession, pPlayerA->m_ID, pPlayerA->m_direction, pPlayerA->m_x, pPlayerA->m_y);
     }
+}
+
+void SendDestructionPacketBetween(CObject* pObjectA, CObject* pObjectB)
+{
+    CPlayer* pPlayerA = static_cast<CPlayer*>(pObjectA);
+    CPlayer* pPlayerB = static_cast<CPlayer*>(pObjectB);
+
+    // A에게 B에 대한 정보를 삭제하는 패킷을 전송
+    SC_DELETE_CHARACTER_FOR_SINGLE(pPlayerA->m_pSession, pPlayerB->m_ID);
+
+    // B에게 A에 대한 정보를 삭제하는 패킷을 전송
+    SC_DELETE_CHARACTER_FOR_SINGLE(pPlayerB->m_pSession, pPlayerA->m_ID);
 }
