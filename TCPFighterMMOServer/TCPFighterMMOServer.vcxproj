@@ -77,6 +77,8 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard_C>stdc11</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -93,6 +95,8 @@
       <ConformanceMode>true</ConformanceMode>
       <Optimization>Disabled</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard_C>stdc11</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -108,6 +112,8 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard_C>stdc11</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -124,6 +130,8 @@
       <ConformanceMode>true</ConformanceMode>
       <Optimization>Disabled</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard_C>stdc11</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -135,6 +143,8 @@
   <ItemGroup>
     <ClCompile Include="Content.cpp" />
     <ClCompile Include="CustomException.cpp" />
+    <ClCompile Include="MemoryPoolManager.cpp" />
+    <ClCompile Include="Profile.cpp" />
     <ClCompile Include="Sinleton.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MakePacket.cpp" />
@@ -158,6 +168,8 @@
     <ClInclude Include="CustomException.h" />
     <ClInclude Include="Defines.h" />
     <ClInclude Include="MakePacket.h" />
+    <ClInclude Include="MemoryPool.h" />
+    <ClInclude Include="MemoryPoolManager.h" />
     <ClInclude Include="NetIOManager.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="ObjectManager.h" />
@@ -165,7 +177,9 @@
     <ClInclude Include="PacketProc.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="Profile.h" />
     <ClInclude Include="Protocol.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="RingBuffer.h" />
     <ClInclude Include="Sector.h" />
     <ClInclude Include="SectorManager.h" />
@@ -175,6 +189,9 @@
     <ClInclude Include="StackWalker.h" />
     <ClInclude Include="TimerManager.h" />
     <ClInclude Include="WinSockManager.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="TCPFighterMMOServer.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

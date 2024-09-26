@@ -5,15 +5,13 @@
 
 CPacket::CPacket(int iBufferSize)
 {
-	m_chpBuffer = new char[iBufferSize];
 	m_iBufferSize = iBufferSize;
+	m_iFront = m_iRear = 0;
 }
 
 CPacket::~CPacket()
 {
 	Clear();
-
-	delete[] m_chpBuffer;
 }
 
 void CPacket::Clear(void)
@@ -42,7 +40,6 @@ CPacket& CPacket::operator=(CPacket& clSrcPacket)
 {
 	m_iFront = clSrcPacket.m_iFront;
 	m_iRear = clSrcPacket.m_iRear;
-	m_chpBuffer = new char[clSrcPacket.m_iBufferSize];
 	memcpy(m_chpBuffer, clSrcPacket.m_chpBuffer, m_iRear);
 
 	return *this;

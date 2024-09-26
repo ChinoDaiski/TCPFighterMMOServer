@@ -12,13 +12,13 @@
 
 #include "Player.h"
 
+#include "MemoryPoolManager.h"
+
 static CSectorManager& sectorManager = CSectorManager::GetInstance();
 static CObjectManager& objectManager = CObjectManager::GetInstance();
 
 bool PacketProc(CSession* pSession, PACKET_TYPE packetType, CPacket* pPacket)
 {
-    pSession->pObj->SetCurTimeout();
-
     switch (packetType)
     {
     case PACKET_TYPE::CS_MOVE_START:
@@ -134,10 +134,8 @@ bool CS_MOVE_START(CSession* pSession, UINT8 direction, UINT16 x, UINT16 y)
         std::abs(posY - y) > dfERROR_RANGE
         )
     {
+        // 클라이언트의 좌표가 서버와 잘못되었지만 서버의 좌표가 맞다고 봐야하기 때문에 싱크 메시지에 서버가 관리하는 좌표를 넣어 클라가 맞추게 한다.
         SC_SYNC_FOR_SINGLE(pSession, pPlayer->m_ID, posX, posY);
-        
-        // 클라로 부터 온 위치를 믿어줌
-        pPlayer->SetPosition(posX, posY);
 
         //NotifyClientDisconnected(pSession);
 
@@ -177,6 +175,18 @@ bool CS_MOVE_STOP(CSession* pSession, UINT8 direction, UINT16 x, UINT16 y)
     // 3. 서버 내에서 이동 연산 멈춤을 알림
 
     CPlayer* pPlayer = static_cast<CPlayer*>(pSession->pObj);
+
+    UINT16 posX, posY;
+    pPlayer->getPosition(posX, posY);
+    if (
+        std::abs(posX - x) > dfERROR_RANGE ||
+        std::abs(posY - y) > dfERROR_RANGE
+        )
+    {
+        // 클라이언트의 좌표가 서버와 잘못되었지만 서버의 좌표가 맞다고 봐야하기 때문에 싱크 메시지에 서버가 관리하는 좌표를 넣어 클라가 맞추게 한다.
+        SC_SYNC_FOR_SINGLE(pSession, pPlayer->m_ID, posX, posY);
+    }
+
 
     //=====================================================================================================================================
     // 1. 받은 데이터 처리
@@ -245,28 +255,37 @@ bool CS_ATTACK1(CSession* pSession, UINT8 direction, UINT16 x, UINT16 y)
     bottom = posY + dfATTACK1_RANGE_Y;
 
     CPlayer* pOtherPlayer;
-    for (auto& Object : pCurSector->GetSectorObjectMap())
+   
+    for (auto& Sector : pCurSector->GetAroundSectorList())
     {
-        pOtherPlayer = static_cast<CPlayer*>(Object.second);
-
-        if (pPlayer == pOtherPlayer)
-            continue;
-
-        pOtherPlayer->getPosition(posX, posY);
-
-        // 다른 플레이어의 좌표가 공격 범위에 있을 경우
-        if (posX >= left && posX <= right &&
-            posY >= top && posY <= bottom)
+        bool bBreak = false;
+        for (auto& Object : Sector->GetSectorObjectMap())
         {
-            //=====================================================================================================================================
-            // 3. dfPACKET_SC_DAMAGE 를 브로드캐스팅
-            //=====================================================================================================================================
-            // 1명만 데미지를 입도록 함
-            pOtherPlayer->Damaged(dfATTACK1_DAMAGE);
+            pOtherPlayer = static_cast<CPlayer*>(Object.second);
 
-            SC_DAMAGE_FOR_AROUND(nullptr, pCurSector, pSession->pObj->m_ID, pOtherPlayer->m_ID, pOtherPlayer->GetHp());
-            break;
+            if (pPlayer == pOtherPlayer)
+                continue;
+
+            pOtherPlayer->getPosition(posX, posY);
+
+            // 다른 플레이어의 좌표가 공격 범위에 있을 경우
+            if (posX >= left && posX <= right &&
+                posY >= top && posY <= bottom)
+            {
+                //=====================================================================================================================================
+                // 3. dfPACKET_SC_DAMAGE 를 브로드캐스팅
+                //=====================================================================================================================================
+                // 1명만 데미지를 입도록 함
+                pOtherPlayer->Damaged(dfATTACK1_DAMAGE);
+
+                SC_DAMAGE_FOR_AROUND(nullptr, pCurSector, pSession->pObj->m_ID, pOtherPlayer->m_ID, pOtherPlayer->GetHp());
+                bBreak = true;
+                break;
+            }
         }
+
+        if (bBreak)
+            break;
     }
 
     return true;
@@ -317,28 +336,36 @@ bool CS_ATTACK2(CSession* pSession, UINT8 direction, UINT16 x, UINT16 y)
     bottom = posY + dfATTACK2_RANGE_Y;
 
     CPlayer* pOtherPlayer;
-    for (auto& Object : pCurSector->GetSectorObjectMap())
+    for (auto& Sector : pCurSector->GetAroundSectorList())
     {
-        pOtherPlayer = static_cast<CPlayer*>(Object.second);
-
-        if (pPlayer == pOtherPlayer)
-            continue;
-
-        pOtherPlayer->getPosition(posX, posY);
-
-        // 다른 플레이어의 좌표가 공격 범위에 있을 경우
-        if (posX >= left && posX <= right &&
-            posY >= top && posY <= bottom)
+        bool bBreak = false;
+        for (auto& Object : Sector->GetSectorObjectMap())
         {
-            //=====================================================================================================================================
-            // 3. dfPACKET_SC_DAMAGE 를 브로드캐스팅
-            //=====================================================================================================================================
-            // 1명만 데미지를 입도록 함
-            pOtherPlayer->Damaged(dfATTACK2_DAMAGE);
+            pOtherPlayer = static_cast<CPlayer*>(Object.second);
 
-            SC_DAMAGE_FOR_AROUND(nullptr, pCurSector, pSession->pObj->m_ID, pOtherPlayer->m_ID, pOtherPlayer->GetHp());
-            break;
+            if (pPlayer == pOtherPlayer)
+                continue;
+
+            pOtherPlayer->getPosition(posX, posY);
+
+            // 다른 플레이어의 좌표가 공격 범위에 있을 경우
+            if (posX >= left && posX <= right &&
+                posY >= top && posY <= bottom)
+            {
+                //=====================================================================================================================================
+                // 3. dfPACKET_SC_DAMAGE 를 브로드캐스팅
+                //=====================================================================================================================================
+                // 1명만 데미지를 입도록 함
+                pOtherPlayer->Damaged(dfATTACK2_DAMAGE);
+
+                SC_DAMAGE_FOR_AROUND(nullptr, pCurSector, pSession->pObj->m_ID, pOtherPlayer->m_ID, pOtherPlayer->GetHp());
+                bBreak = true;
+                break;
+            }
         }
+
+        if (bBreak)
+            break;
     }
 
     return true;
@@ -389,28 +416,36 @@ bool CS_ATTACK3(CSession* pSession, UINT8 direction, UINT16 x, UINT16 y)
     bottom = posY + dfATTACK3_RANGE_Y;
 
     CPlayer* pOtherPlayer;
-    for (auto& Object : pCurSector->GetSectorObjectMap())
+    for (auto& Sector : pCurSector->GetAroundSectorList())
     {
-        pOtherPlayer = static_cast<CPlayer*>(Object.second);
-
-        if (pPlayer == pOtherPlayer)
-            continue;
-
-        pOtherPlayer->getPosition(posX, posY);
-
-        // 다른 플레이어의 좌표가 공격 범위에 있을 경우
-        if (posX >= left && posX <= right &&
-            posY >= top && posY <= bottom)
+        bool bBreak = false;
+        for (auto& Object : Sector->GetSectorObjectMap())
         {
-            //=====================================================================================================================================
-            // 3. dfPACKET_SC_DAMAGE 를 브로드캐스팅
-            //=====================================================================================================================================
-            // 1명만 데미지를 입도록 함
-            pOtherPlayer->Damaged(dfATTACK3_DAMAGE);
+            pOtherPlayer = static_cast<CPlayer*>(Object.second);
 
-            SC_DAMAGE_FOR_AROUND(nullptr, pCurSector, pSession->pObj->m_ID, pOtherPlayer->m_ID, pOtherPlayer->GetHp());
-            break;
+            if (pPlayer == pOtherPlayer)
+                continue;
+
+            pOtherPlayer->getPosition(posX, posY);
+
+            // 다른 플레이어의 좌표가 공격 범위에 있을 경우
+            if (posX >= left && posX <= right &&
+                posY >= top && posY <= bottom)
+            {
+                //=====================================================================================================================================
+                // 3. dfPACKET_SC_DAMAGE 를 브로드캐스팅
+                //=====================================================================================================================================
+                // 1명만 데미지를 입도록 함
+                pOtherPlayer->Damaged(dfATTACK3_DAMAGE);
+
+                SC_DAMAGE_FOR_AROUND(nullptr, pCurSector, pSession->pObj->m_ID, pOtherPlayer->m_ID, pOtherPlayer->GetHp());
+                bBreak = true;
+                break;
+            }
         }
+
+        if (bBreak)
+            break;
     }
 
     return true;
@@ -443,4 +478,6 @@ void DisconnectSessionProc(CSession* pSession)
 
     sectorManager.DeleteObjectFromSector(pSession->pObj); // 섹터 매니저에서 삭제
     objectManager.DeleteObject(pSession->pObj); // 오브젝트 매니저에서 삭제
+
+    playerPool.Free(static_cast<CPlayer*>(pSession->pObj)); // 플레이어 삭제
 }

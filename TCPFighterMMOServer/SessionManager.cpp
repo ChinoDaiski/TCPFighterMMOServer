@@ -7,6 +7,8 @@
 
 #include "Player.h"
 
+#include "MemoryPoolManager.h"
+
 static CSectorManager& sectorManager = CSectorManager::GetInstance();
 static CObjectManager& objectManager = CObjectManager::GetInstance();
 
@@ -37,7 +39,8 @@ void CSessionManager::Update(void)
 
             // 제거
             closesocket((*it).second->sock);
-            delete (*it).second;   // 세션 삭제
+
+            sessionPool.Free((*it).second); // 세션 삭제
 
             it = g_SessionHashMap.erase(it);
         }
@@ -186,7 +189,10 @@ CSession* createSession(SOCKET ClientSocket, SOCKADDR_IN ClientAddr)
     CWinSockManager& winSockManager = CWinSockManager::GetInstance();
 
     // accept가 완료되었다면 세션에 등록 후, 해당 세션에 패킷 전송
-    CSession* Session = new CSession;
+    CSession* Session = sessionPool.Alloc();
+    Session->recvQ.ClearBuffer();
+    Session->sendQ.ClearBuffer();
+
     Session->isAlive = true;
 
     // 소켓 정보 추가

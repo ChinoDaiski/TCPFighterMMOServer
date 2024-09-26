@@ -10,7 +10,7 @@ class CPacket
 public:
 	enum class en_PACKET : UINT32
 	{
-		eBUFFER_DEFAULT = 2000		// 패킷의 기본 버퍼 사이즈.
+		eBUFFER_DEFAULT = 100		// 패킷의 기본 버퍼 사이즈.
 	};
 
 	//////////////////////////////////////////////////////////////////////////
@@ -171,7 +171,7 @@ public:
 
 
 protected:
-	char* m_chpBuffer;      // 데이터 저장 배열
+	char m_chpBuffer[static_cast<UINT32>(en_PACKET::eBUFFER_DEFAULT)];      // 데이터 저장 배열
 	int m_iBufferSize;      // 버퍼의 전체 용량
 	int m_iFront;           // 현재 읽기 위치 (front)
 	int m_iRear;            // 현재 쓰기 위치 (rear)

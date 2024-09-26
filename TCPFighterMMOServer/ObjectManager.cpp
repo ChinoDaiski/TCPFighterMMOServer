@@ -54,6 +54,4 @@ void CObjectManager::RegisterObject(CObject* pObject)
 void CObjectManager::DeleteObject(CObject* pObject)
 {
     m_ObjectHashMap.erase(pObject->m_ID);
-
-    delete pObject;  // 플레이어 삭제
 }

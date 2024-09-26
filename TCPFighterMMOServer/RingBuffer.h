@@ -1,7 +1,7 @@
 
 #pragma once
 
-#define RINGBUFFER_SIZE 100000
+#define RINGBUFFER_SIZE 20000
 
 #include <iostream>
 #include <string>
