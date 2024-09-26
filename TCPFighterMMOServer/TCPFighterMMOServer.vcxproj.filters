@@ -66,14 +66,23 @@
     <Filter Include="소스 파일\01. Manager\02. ObjMgr\Object\Player">
       <UniqueIdentifier>{9ef624b1-d76c-4cfb-b0e0-5103fb84d98c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\04. Content">
-      <UniqueIdentifier>{22356c94-163c-4a66-84c4-77820e424b30}</UniqueIdentifier>
-    </Filter>
     <Filter Include="소스 파일\01. Manager\05. SectorMgr">
       <UniqueIdentifier>{43711edb-3044-426d-ab12-aedff0cba4bc}</UniqueIdentifier>
     </Filter>
     <Filter Include="소스 파일\01. Manager\05. SectorMgr\Sector">
       <UniqueIdentifier>{087773e7-89a4-4ef9-a994-7338bbea9fb0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\99. Etc\03. Profile">
+      <UniqueIdentifier>{9d603127-4821-4a32-83cb-c0a1a6479535}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\01. Manager\06. MemoryPoolMgr">
+      <UniqueIdentifier>{dc8e71a3-1516-4d2d-bc2f-24edf426b91a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\01. Manager\06. MemoryPoolMgr\MemoryPool">
+      <UniqueIdentifier>{b7ad60c8-85db-447e-9c5c-41adb7c41a7a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\06. Content">
+      <UniqueIdentifier>{22356c94-163c-4a66-84c4-77820e424b30}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -123,7 +132,7 @@
       <Filter>소스 파일\01. Manager\02. ObjMgr\Object\Player</Filter>
     </ClCompile>
     <ClCompile Include="Content.cpp">
-      <Filter>소스 파일\04. Content</Filter>
+      <Filter>소스 파일\06. Content</Filter>
     </ClCompile>
     <ClCompile Include="SectorManager.cpp">
       <Filter>소스 파일\01. Manager\05. SectorMgr</Filter>
@@ -133,6 +142,12 @@
     </ClCompile>
     <ClCompile Include="Sinleton.cpp">
       <Filter>소스 파일\01. Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Profile.cpp">
+      <Filter>소스 파일\99. Etc\03. Profile</Filter>
+    </ClCompile>
+    <ClCompile Include="MemoryPoolManager.cpp">
+      <Filter>소스 파일\01. Manager\06. MemoryPoolMgr</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -191,13 +206,22 @@
       <Filter>소스 파일\01. Manager\02. ObjMgr\Object\Player</Filter>
     </ClInclude>
     <ClInclude Include="Content.h">
-      <Filter>소스 파일\04. Content</Filter>
+      <Filter>소스 파일\06. Content</Filter>
     </ClInclude>
     <ClInclude Include="SectorManager.h">
       <Filter>소스 파일\01. Manager\05. SectorMgr</Filter>
     </ClInclude>
     <ClInclude Include="Sector.h">
       <Filter>소스 파일\01. Manager\05. SectorMgr\Sector</Filter>
+    </ClInclude>
+    <ClInclude Include="Profile.h">
+      <Filter>소스 파일\99. Etc\03. Profile</Filter>
+    </ClInclude>
+    <ClInclude Include="MemoryPool.h">
+      <Filter>소스 파일\01. Manager\06. MemoryPoolMgr\MemoryPool</Filter>
+    </ClInclude>
+    <ClInclude Include="MemoryPoolManager.h">
+      <Filter>소스 파일\01. Manager\06. MemoryPoolMgr</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

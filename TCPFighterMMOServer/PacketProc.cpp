@@ -134,10 +134,8 @@ bool CS_MOVE_START(CSession* pSession, UINT8 direction, UINT16 x, UINT16 y)
         std::abs(posY - y) > dfERROR_RANGE
         )
     {
+        // 클라이언트의 좌표가 서버와 잘못되었지만 서버의 좌표가 맞다고 봐야하기 때문에 싱크 메시지에 서버가 관리하는 좌표를 넣어 클라가 맞추게 한다.
         SC_SYNC_FOR_SINGLE(pSession, pPlayer->m_ID, posX, posY);
-        
-        // 클라로 부터 온 위치를 믿어줌
-        pPlayer->SetPosition(posX, posY);
 
         //NotifyClientDisconnected(pSession);
 
@@ -177,6 +175,18 @@ bool CS_MOVE_STOP(CSession* pSession, UINT8 direction, UINT16 x, UINT16 y)
     // 3. 서버 내에서 이동 연산 멈춤을 알림
 
     CPlayer* pPlayer = static_cast<CPlayer*>(pSession->pObj);
+
+    UINT16 posX, posY;
+    pPlayer->getPosition(posX, posY);
+    if (
+        std::abs(posX - x) > dfERROR_RANGE ||
+        std::abs(posY - y) > dfERROR_RANGE
+        )
+    {
+        // 클라이언트의 좌표가 서버와 잘못되었지만 서버의 좌표가 맞다고 봐야하기 때문에 싱크 메시지에 서버가 관리하는 좌표를 넣어 클라가 맞추게 한다.
+        SC_SYNC_FOR_SINGLE(pSession, pPlayer->m_ID, posX, posY);
+    }
+
 
     //=====================================================================================================================================
     // 1. 받은 데이터 처리

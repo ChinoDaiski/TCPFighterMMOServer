@@ -135,6 +135,8 @@
   <ItemGroup>
     <ClCompile Include="Content.cpp" />
     <ClCompile Include="CustomException.cpp" />
+    <ClCompile Include="MemoryPoolManager.cpp" />
+    <ClCompile Include="Profile.cpp" />
     <ClCompile Include="Sinleton.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MakePacket.cpp" />
@@ -158,6 +160,8 @@
     <ClInclude Include="CustomException.h" />
     <ClInclude Include="Defines.h" />
     <ClInclude Include="MakePacket.h" />
+    <ClInclude Include="MemoryPool.h" />
+    <ClInclude Include="MemoryPoolManager.h" />
     <ClInclude Include="NetIOManager.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="ObjectManager.h" />
@@ -165,6 +169,7 @@
     <ClInclude Include="PacketProc.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="Profile.h" />
     <ClInclude Include="Protocol.h" />
     <ClInclude Include="RingBuffer.h" />
     <ClInclude Include="Sector.h" />
