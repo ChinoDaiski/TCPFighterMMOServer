@@ -17,6 +17,9 @@ public:
 	void InitTimer(DWORD _targetFPS);
 	bool CheckFrame(void);
 
+public:
+	inline DWORD GetCurrServerTime(void) { return m_currentServerTime; }
+
 private:
 	DWORD m_targetFPS;				// 1초당 목표 프레임
 	DWORD m_givenFrameTime;			// 1초당 주어지는 시간 -> 1000 / m_targetFPS

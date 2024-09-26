@@ -17,6 +17,8 @@ static CObjectManager& objectManager = CObjectManager::GetInstance();
 
 bool PacketProc(CSession* pSession, PACKET_TYPE packetType, CPacket* pPacket)
 {
+    pSession->pObj->SetCurTimeout();
+
     switch (packetType)
     {
     case PACKET_TYPE::CS_MOVE_START:
@@ -138,8 +140,6 @@ bool CS_MOVE_START(CSession* pSession, UINT8 direction, UINT16 x, UINT16 y)
         pPlayer->SetPosition(posX, posY);
 
         //NotifyClientDisconnected(pSession);
-
-
 
         // 로그 찍을거면 여기서 찍을 것
         /*int gapX = std::abs(posX - x);
@@ -440,4 +440,7 @@ void DisconnectSessionProc(CSession* pSession)
 
     CSector* pCurSector = sectorManager.GetSectorInfo(pPlayer->m_curSectorPos.x, pPlayer->m_curSectorPos.y);
     SC_DELETE_CHARACTER_FOR_AROUND(nullptr, pCurSector, pPlayer->m_ID);
+
+    sectorManager.DeleteObjectFromSector(pSession->pObj); // 섹터 매니저에서 삭제
+    objectManager.DeleteObject(pSession->pObj); // 오브젝트 매니저에서 삭제
 }

@@ -564,7 +564,7 @@ void SC_ECHO_FOR_SINGLE(CSession* pSession, UINT32 time)
     header.bySize = Packet.GetDataSize();
     header.byType = dfPACKET_SC_ECHO;
 
-    BroadcastPacket(pSession, &header, &Packet);
+    UnicastPacket(pSession, &header, &Packet);
 }
 
 void SC_ECHO_FOR_AROUND(CSession* pSession, CSector* pSector, UINT32 time)

@@ -24,24 +24,36 @@ void CTimerManager::InitTimer(DWORD _targetFPS)
 
 bool CTimerManager::CheckFrame(void)
 {
+#ifdef CHECK_FPS
+
 	// 프레임 맞추기
 	if (timeGetTime() < (m_currentServerTime + m_givenFrameTime))
 		return false;
 
 	m_currentServerTime += m_givenFrameTime;
 
-#ifdef CHECK_FPS
 	m_FPS++;
 
 	// fps 측정
 	if ((m_currentServerTime - m_standardServerTime) >= 1000)
 	{
-		std::cout << m_FPS << " / " << m_currentServerTime - m_standardServerTime << "\n";
+		std::cout << m_FPS << "\n"; //" / " << m_currentServerTime - m_standardServerTime << "\n";
+		m_standardServerTime += 1000;
 
 		m_FPS = 0;
 	}
-#endif // CHECK_FPS
 
 	return true;
-}
 
+#else
+
+	// 프레임 맞추기
+	if (timeGetTime() < (m_currentServerTime + m_givenFrameTime))
+		return false;
+
+	m_currentServerTime += m_givenFrameTime;
+
+	return true;
+	
+#endif
+}

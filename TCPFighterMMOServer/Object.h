@@ -29,6 +29,11 @@ public:
 
 public:
     inline bool isDead(void) { return m_bDead; }
+    
+private:
+    void CheckTimeout(void);    // 추기적으로 Timeout을 확인하기 위해 불러주는 함수
+    void SetCurTimeout(void);   // Timeout 값을 설정하는 함수. 패킷 처리할 때 마다 호출해서 Timeout 갱신
+    friend bool PacketProc(CSession* pSession, PACKET_TYPE packetType, CPacket* pPacket);
 
 public:
     CSession* m_pSession;
@@ -39,6 +44,10 @@ public:
 protected:
     UINT16 m_x, m_y;
     bool m_bDead;
+
+private:
+    // Timeout 관련
+    UINT32 m_lastTimeoutCheckTime; // timegettime 기준 값
 
 private:
     static UINT32 g_ID; // ID

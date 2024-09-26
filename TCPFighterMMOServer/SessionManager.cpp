@@ -35,9 +35,6 @@ void CSessionManager::Update(void)
             // 컨텐츠에서 넣어준 함수 호출
             m_callbackDisconnect((*it).second);
 
-            sectorManager.DeleteObjectFromSector((*it).second->pObj); // 섹터 매니저에서 삭제
-            objectManager.DeleteObject((*it).second->pObj); // 오브젝트 매니저에서 삭제
-
             // 제거
             closesocket((*it).second->sock);
             delete (*it).second;   // 세션 삭제

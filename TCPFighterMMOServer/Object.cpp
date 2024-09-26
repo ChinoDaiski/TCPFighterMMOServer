@@ -5,8 +5,10 @@
 #include "Object.h"
 #include "Session.h"
 #include "SectorManager.h"
+#include "TimerManager.h"
 
 UINT32 CObject::g_ID = 0;
+static CTimerManager& timerManager = CTimerManager::GetInstance();
 
 CObject::CObject(UINT16 _x, UINT16 _y) noexcept
 	: m_x(_x), m_y(_y), m_pSession(nullptr), m_bDead(false)
@@ -25,6 +27,7 @@ void CObject::Move()
 
 void CObject::Update(void)
 {
+	CheckTimeout();
 }
 
 void CObject::LateUpdate(void)
@@ -44,4 +47,22 @@ void CObject::LateUpdate(void)
 		static CSectorManager& sectorManager = CSectorManager::GetInstance();
 		sectorManager.CalculateSectorChanges(this);
 	}
+}
+
+void CObject::CheckTimeout(void)
+{
+	UINT32 currSeverTime = timerManager.GetCurrServerTime();
+	if ((currSeverTime - m_lastTimeoutCheckTime) > dfNETWORK_PACKET_RECV_TIMEOUT)
+	{
+		m_bDead = true;
+	}
+	else
+		m_lastTimeoutCheckTime = currSeverTime;
+}
+
+void CObject::SetCurTimeout(void)
+{
+	m_lastTimeoutCheckTime = timerManager.GetCurrServerTime();
+
+
 }

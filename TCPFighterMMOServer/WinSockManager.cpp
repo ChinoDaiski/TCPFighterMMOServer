@@ -57,8 +57,8 @@ void CWinSockManager::Bind(UINT16 serverPort, UINT32 serverIP)
     SOCKADDR_IN serveraddr;
     ZeroMemory(&serveraddr, sizeof(serveraddr));
     serveraddr.sin_family = AF_INET;
-    serveraddr.sin_addr.s_addr = htonl(serverIP);
-    serveraddr.sin_port = htons(serverPort);
+    serveraddr.sin_addr.s_addr = ::htonl(serverIP);
+    serveraddr.sin_port = ::htons(serverPort);
     int retVal = bind(m_listenSocket, (SOCKADDR*)&serveraddr, sizeof(serveraddr));
 
     if (retVal == SOCKET_ERROR)
@@ -83,7 +83,7 @@ inline void CWinSockManager::SetOptions(UINT8 options)
     if (options == 0)
         return;
 
-    if (options | OPTION_NONBLOCKING)
+    if (options & OPTION_NONBLOCKING)
     {
         ULONG on = 1;   // 0ÀÌ ¾Æ´Ò °æ¿ì non-blocking ¸ðµ¨·Î ÀüÈ¯
         int NonBlockingRetVal = ioctlsocket(m_listenSocket, FIONBIO, &on);
