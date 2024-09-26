@@ -10,13 +10,16 @@ void SendDestructionPacketBetween(CObject*, CObject*);
 
 class CPlayer : public CObject {
 public:
-    explicit CPlayer(UINT16 _x, UINT16 _y, UINT8 _direction, UINT8 _hp) noexcept;
+    explicit CPlayer(UINT16 _x = 0, UINT16 _y = 0, UINT8 _direction = 0, UINT8 _hp = 0) noexcept;
     virtual ~CPlayer();
 
     // 기타 멤버 함수 선언
     virtual void Update(void) override;
     virtual void LateUpdate(void) override;
     virtual void Move(void) override;
+
+public:
+    void Init(UINT16 _x, UINT16 _y, UINT8 _direction, UINT8 _hp);
 
 public:
     // 나중에 플레이어를 제외한 다른 오브젝트가 추가되면 이 함수들을 CObject에 넣고, 상속받은 class들이 오버라이딩해서 관련 내용을 작성하면 된다.

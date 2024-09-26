@@ -21,6 +21,8 @@
 // 오브젝트 관련
 //===================================================
 #include "Player.h"
+#include "Session.h"
+#include "Packet.h"
 
 //===================================================
 // 패킷 처리 관련
@@ -36,6 +38,10 @@
 // 키 입력
 //===================================================
 #include <conio.h>
+
+
+#include "MemoryPoolManager.h"
+
 
 bool g_bShutdown = false;
 
@@ -181,25 +187,12 @@ void ServerControl(void)
     }
 }
 
-void moveCursorToTopLeft() {
-    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);  // 콘솔 핸들 가져오기
-    COORD topLeft = { 0, 0 };  // 콘솔 창의 왼쪽 상단 좌표
-    SetConsoleCursorPosition(hConsole, topLeft);  // 커서를 좌표로 이동
-}
-
 // 모니터링 정보를 표시, 저장, 전송하는 경우 사용
 void Monitor(void)
 {
-    //// 접속한 모든 캐릭터의 수를 출력
-    //CSectorManager& sectorManager = CSectorManager::GetInstance();
+    //system("cls");
 
-    //moveCursorToTopLeft();
-    //for (UINT8 i = 0; i < dfSECTOR_HEIGHT_CNT; ++i)
-    //{
-    //    for (UINT8 j = 0; j < dfSECTOR_WIDTH_CNT; ++j)
-    //    {
-    //        std::cout << sectorManager.GetSectorInfo(i, j)->GetSectorObjectMap().size() << " ";
-    //    }
-    //    std::cout << "\n";
-    //}
+    //playerPool.PrintUsage();
+    //sessionPool.PrintUsage();
+    //packetPool.PrintUsage();
 }

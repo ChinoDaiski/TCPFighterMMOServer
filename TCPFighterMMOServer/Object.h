@@ -8,11 +8,15 @@ public:
     explicit CObject(UINT16 _x = 0, UINT16 _y = 0) noexcept;
     virtual ~CObject() = default;
 
-    virtual void Move();
+    // 메모리 풀에서 사용할 용도
+    virtual void Init(void);
 
-    // 업데이트 메서드 (서버 로직에서 오브젝트 상태를 갱신하는 데 사용)
+    // 업데이트 함수 (서버 로직에서 오브젝트 상태를 갱신하는 데 사용)
     virtual void Update(void);
     virtual void LateUpdate(void);
+
+    // 움직임 관련 함수
+    virtual void Move(void);
 
 
 public:

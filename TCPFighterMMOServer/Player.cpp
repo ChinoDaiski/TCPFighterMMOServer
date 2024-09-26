@@ -64,6 +64,20 @@ void CPlayer::Move(void)
     }
 }
 
+void CPlayer::Init(UINT16 _x, UINT16 _y, UINT8 _direction, UINT8 _hp)
+{
+    m_x = _x;
+    m_y = _y;
+    m_pSession = nullptr;
+    m_bDead = false;
+    m_hp = _hp;
+    m_direction = _direction;
+    m_facingDirection = dfPACKET_MOVE_DIR_LL;
+    m_FlagField = 0;
+
+    __super::Init();
+}
+
 void CPlayer::SetDirection(int _direction)
 {
     m_direction = _direction;

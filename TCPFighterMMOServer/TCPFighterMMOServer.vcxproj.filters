@@ -220,8 +220,14 @@
     <ClInclude Include="MemoryPool.h">
       <Filter>소스 파일\01. Manager\06. MemoryPoolMgr\MemoryPool</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h" />
     <ClInclude Include="MemoryPoolManager.h">
       <Filter>소스 파일\01. Manager\06. MemoryPoolMgr</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="TCPFighterMMOServer.rc">
+      <Filter>리소스 파일</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

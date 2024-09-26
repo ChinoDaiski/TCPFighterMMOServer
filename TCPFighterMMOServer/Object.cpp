@@ -15,19 +15,24 @@ CObject::CObject(UINT16 _x, UINT16 _y) noexcept
 {
 	m_ID = g_ID;
 	g_ID++;
-
-	// 플레이어가 생성될 시 섹터 매니저에 등록
-	static CSectorManager& sectorManager = CSectorManager::GetInstance();
-	sectorManager.RegisterObjectToSector(this);
 }
 
 void CObject::Move()
 {
 }
 
+void CObject::Init(void)
+{
+	// 플레이어가 생성될 시 섹터 매니저에 등록
+	static CSectorManager& sectorManager = CSectorManager::GetInstance();
+	sectorManager.RegisterObjectToSector(this);
+
+	SetCurTimeout();
+}
+
 void CObject::Update(void)
 {
-	CheckTimeout();
+	//CheckTimeout();
 }
 
 void CObject::LateUpdate(void)
@@ -56,13 +61,9 @@ void CObject::CheckTimeout(void)
 	{
 		m_bDead = true;
 	}
-	else
-		m_lastTimeoutCheckTime = currSeverTime;
 }
 
 void CObject::SetCurTimeout(void)
 {
 	m_lastTimeoutCheckTime = timerManager.GetCurrServerTime();
-
-
 }

@@ -6,7 +6,7 @@
 
 #define dfPEAK_TO_AVERAGE_CAPACITY_RATIO	5		// 한 섹터에서 다른 섹터 평균 대비 최대 수용 가능 배수
 
-CSector::CSector(UINT16 posX, UINT16 posY) noexcept
+CSector::CSector(UINT8 posX, UINT8 posY) noexcept
 	: m_posX(posX), m_posY(posY)
 {
 	// 9를 곱하는건 자신을 포함한 최대 9개의 주위 섹터에서 패킷에 정보를 적재할 수 있기 때문

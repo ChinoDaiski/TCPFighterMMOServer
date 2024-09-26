@@ -7,7 +7,7 @@ class CSector
 {
 public:
 	// 인자로 전체 섹터에서 위치한 인덱스를 받음
-	explicit CSector(UINT16 Width, UINT16 Height) noexcept;
+	explicit CSector(UINT8 Width, UINT8 Height) noexcept;
 	~CSector(void);
 
 public:

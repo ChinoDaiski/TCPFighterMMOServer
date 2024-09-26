@@ -7,20 +7,22 @@
 #include "SectorManager.h"
 #include "Sector.h" 
 
+#include "MemoryPoolManager.h"
+
 CObject* CreateAcceptObject(void)
 {
     // 오브젝트 생성 및 오브젝트를 섹터에 등록
-    CObject* pObj = new CPlayer(
+    CPlayer* pPlayer = playerPool.Alloc();
+    pPlayer->Init(
         rand() % (dfRANGE_MOVE_RIGHT - dfRANGE_MOVE_LEFT - 10) + dfRANGE_MOVE_LEFT + 10,  // rand() % 500 + 100,
         rand() % (dfRANGE_MOVE_BOTTOM - dfRANGE_MOVE_TOP - 10) + dfRANGE_MOVE_TOP + 10,   // rand() % 500 + 100,
         dfPACKET_MOVE_DIR_LL,
         100
     );
 
-    CPlayer* pPlayer = static_cast<CPlayer*>(pObj);
     pPlayer->SetSpeed(dfSPEED_PLAYER_X, dfSPEED_PLAYER_Y);
 
-	return pObj;
+    return pPlayer;
 }
 
 void LoginAcceptObject(CObject* pObj)
