@@ -32,7 +32,7 @@ void CObject::Init(void)
 
 void CObject::Update(void)
 {
-	//CheckTimeout();
+	CheckTimeout();
 }
 
 void CObject::LateUpdate(void)

@@ -19,6 +19,8 @@ static CObjectManager& objectManager = CObjectManager::GetInstance();
 
 bool PacketProc(CSession* pSession, PACKET_TYPE packetType, CPacket* pPacket)
 {
+    pSession->pObj->SetCurTimeout();
+
     switch (packetType)
     {
     case PACKET_TYPE::CS_MOVE_START:
