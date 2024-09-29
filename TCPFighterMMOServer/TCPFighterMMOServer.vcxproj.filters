@@ -84,6 +84,12 @@
     <Filter Include="소스 파일\06. Content">
       <UniqueIdentifier>{22356c94-163c-4a66-84c4-77820e424b30}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\99. Etc\04. Debug_Defines">
+      <UniqueIdentifier>{105471b3-095d-447c-bedd-7a9c585ee25a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\01. Manager\07. LogMgr">
+      <UniqueIdentifier>{4f153e81-0de9-46d0-ba82-b0c1cfd54188}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CustomException.cpp">
@@ -148,6 +154,9 @@
     </ClCompile>
     <ClCompile Include="MemoryPoolManager.cpp">
       <Filter>소스 파일\01. Manager\06. MemoryPoolMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="LogManager.cpp">
+      <Filter>소스 파일\01. Manager\07. LogMgr</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -223,6 +232,12 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="MemoryPoolManager.h">
       <Filter>소스 파일\01. Manager\06. MemoryPoolMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugDefines.h">
+      <Filter>소스 파일\99. Etc\04. Debug_Defines</Filter>
+    </ClInclude>
+    <ClInclude Include="LogManager.h">
+      <Filter>소스 파일\01. Manager\07. LogMgr</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

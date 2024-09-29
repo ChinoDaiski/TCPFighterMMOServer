@@ -143,6 +143,7 @@
   <ItemGroup>
     <ClCompile Include="Content.cpp" />
     <ClCompile Include="CustomException.cpp" />
+    <ClCompile Include="LogManager.cpp" />
     <ClCompile Include="MemoryPoolManager.cpp" />
     <ClCompile Include="Profile.cpp" />
     <ClCompile Include="Sinleton.cpp" />
@@ -166,7 +167,9 @@
   <ItemGroup>
     <ClInclude Include="Content.h" />
     <ClInclude Include="CustomException.h" />
+    <ClInclude Include="DebugDefines.h" />
     <ClInclude Include="Defines.h" />
+    <ClInclude Include="LogManager.h" />
     <ClInclude Include="MakePacket.h" />
     <ClInclude Include="MemoryPool.h" />
     <ClInclude Include="MemoryPoolManager.h" />

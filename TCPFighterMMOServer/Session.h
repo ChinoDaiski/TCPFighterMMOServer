@@ -3,6 +3,8 @@
 class CPacket;
 class CObject;
 
+#include "RingBuffer.h"
+
 class CSession
 {
 public:

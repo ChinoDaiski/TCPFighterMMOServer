@@ -4,6 +4,7 @@
 #include "Packet.h"
 #include "WinSockManager.h"
 #include "Object.h"
+#include "RingBuffer.h"
 
 UINT32 CSession::g_ID = 0;
 
