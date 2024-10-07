@@ -57,7 +57,7 @@ bool CTimerManager::CheckFrame(void)
 	// fps 측정
 	if ((m_currentServerTime - m_standardServerTime) >= 1000)
 	{
-		std::cout << m_FPS << "\n"; //" / " << m_currentServerTime - m_standardServerTime << "\n";
+		std::cout << "Logic Frame"<< m_FPS << "\n"; //" / " << m_currentServerTime - m_standardServerTime << "\n";
 		m_standardServerTime += 1000;
 
 		m_FPS = 0;
@@ -125,7 +125,7 @@ void CTimerManager::PrintJitterStats(void)
 {
 	if (m_jitterCount > 0) {
 		DWORD avgJitter = m_totalJitter / m_jitterCount;
-		std::cout << "Jitter - Min: " << m_minJitter << " ms, Max: " << m_maxJitter << " ms, Avg: " << avgJitter << " ms\n"; 
+		//std::cout << "Jitter - Min: " << m_minJitter << " ms, Max: " << m_maxJitter << " ms, Avg: " << avgJitter << " ms\n"; 
 		
 		// 파일에 기록
 		logManager.LogDebug("Jitter\nMin: ", m_minJitter, " ms\nMax: ", m_maxJitter, " ms\nAvg: ", avgJitter, " ms\n\n");

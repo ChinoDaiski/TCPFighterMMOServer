@@ -14,8 +14,10 @@ CObject* CreateAcceptObject(void)
     // 오브젝트 생성 및 오브젝트를 섹터에 등록
     CPlayer* pPlayer = playerPool.Alloc();
     pPlayer->Init(
-        /*rand() % 500 + 100,*/rand() % (dfRANGE_MOVE_RIGHT - dfRANGE_MOVE_LEFT - 10) + dfRANGE_MOVE_LEFT + 10,
-        /*rand() % 500 + 100,*/rand() % (dfRANGE_MOVE_BOTTOM - dfRANGE_MOVE_TOP - 10) + dfRANGE_MOVE_TOP + 10,
+        //rand() % 30 + 20,
+        //rand() % 30 + 20,
+        rand() % (dfRANGE_MOVE_RIGHT - dfRANGE_MOVE_LEFT - 10) + dfRANGE_MOVE_LEFT + 10,
+        rand() % (dfRANGE_MOVE_BOTTOM - dfRANGE_MOVE_TOP - 10) + dfRANGE_MOVE_TOP + 10,
         dfPACKET_MOVE_DIR_LL,
         100
     );

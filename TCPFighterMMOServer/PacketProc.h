@@ -2,6 +2,8 @@
 
 #include "Session.h"
 
+extern int g_iSyncCount;
+
 class CObject;
 class CSession;
 

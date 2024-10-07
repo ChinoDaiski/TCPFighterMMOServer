@@ -90,6 +90,9 @@
     <Filter Include="소스 파일\01. Manager\07. LogMgr">
       <UniqueIdentifier>{4f153e81-0de9-46d0-ba82-b0c1cfd54188}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\99. Etc\05. CircleQueue">
+      <UniqueIdentifier>{bafa0101-28e1-4b13-812c-d322004662ff}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CustomException.cpp">
@@ -157,6 +160,9 @@
     </ClCompile>
     <ClCompile Include="LogManager.cpp">
       <Filter>소스 파일\01. Manager\07. LogMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="CircularQueue.cpp">
+      <Filter>소스 파일\99. Etc\05. CircleQueue</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -238,6 +244,9 @@
     </ClInclude>
     <ClInclude Include="LogManager.h">
       <Filter>소스 파일\01. Manager\07. LogMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="CircularQueue.h">
+      <Filter>소스 파일\99. Etc\05. CircleQueue</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

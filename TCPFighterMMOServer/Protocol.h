@@ -6,7 +6,7 @@
 
 #include "Defines.h"
 
-#define dfNETWORK_PORT		5000
+#define dfNETWORK_PORT		11402
 #define dfMAX_PACKET_SIZE	10
 
 #pragma pack(push, 1)   

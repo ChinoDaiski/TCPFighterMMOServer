@@ -11,6 +11,9 @@
 
 #include "Packet.h"
 
+#include "TimerManager.h"
+
+CTimerManager& timerManager = CTimerManager::GetInstance();
 
 CNetIOManager::CNetIOManager() noexcept
 {
@@ -35,9 +38,6 @@ void CNetIOManager::netIOProcess(void)
     UINT32 iCSessionSize = g_SessionHashMap.size();
 
     auto iter = g_SessionHashMap.begin();
-
-    static UINT32 netProc_RecvCnt = 0;
-    static UINT32 netProc_SendCnt = 0;
 
     // 연결된 세션의 갯수가 64개 이상이라면
     while (iCSessionSize >= 64)
@@ -65,7 +65,7 @@ void CNetIOManager::netIOProcess(void)
         iResult = select(0, &ReadSet, &WriteSet, NULL, &timeVal);
 
         // iResult 값이 0 이상이라면 읽을 데이터 / 쓸 데이터가 있다는 뜻
-        if (iResult > 0)
+        if (iResult >= 0)
         {
             auto iter2 = iter;
             for (UINT8 i = 0; i < 64; ++i)
@@ -77,10 +77,14 @@ void CNetIOManager::netIOProcess(void)
                     --iResult;
 
                     // recv 이벤트 처리. 메시지 수신 및 메시지 분기 로직 처리
+                    // 같은 프레임에 죽었다고 하더라도 이미 보낸 것 까지는 처리해주기로 했다. 아니면 나중에 접속했다는 이유로 같은 프레임에 손해를 보기 때문이다.
+                    // 만약 소켓 에러로 인한 isAlive = false 처리라면 recv하면서 에러가 감지되며 return 될 것이다. 그러니 이렇게 진행.
                     if ((*iter2).second->isAlive)
                     {
+                        (*iter2).second->recvCnt++;
+                        (*iter2).second->lastRecvTime = timerManager.GetCurrServerTime();
+
                         netProc_Recv((*iter2).second);
-                        ++netProc_RecvCnt;
                     }
                 }
 
@@ -91,10 +95,15 @@ void CNetIOManager::netIOProcess(void)
                     // send 이벤트 처리. 메시지 송신
                     if ((*iter2).second->isAlive)
                     {
+                        (*iter2).second->sendCnt++;
+                        (*iter2).second->lastSendTime = timerManager.GetCurrServerTime();
+
                         netProc_Send((*iter2).second);
-                        ++netProc_SendCnt;
                     }
                 }
+
+                if (iResult == 0)
+                    break;
             }
         }
         else if (iResult == SOCKET_ERROR)
@@ -108,7 +117,7 @@ void CNetIOManager::netIOProcess(void)
 
     // 셋 초기화
     FD_ZERO(&ReadSet);
-    FD_ZERO(&WriteSet);
+    FD_ZERO(&WriteSet); 
 
     // 남은 사이즈만큼 for문 돌면서 FD_SET 실행
     for (UINT8 i = 0; i < iCSessionSize; ++i)
@@ -136,20 +145,11 @@ void CNetIOManager::netIOProcess(void)
     // select 호출
     iResult = select(0, &ReadSet, &WriteSet, NULL, &timeVal);
 
+    auto iter2 = iter;
     // iResult 값이 0 이상이라면 읽을 데이터 / 쓸 데이터가 있다는 뜻
-    if (iResult > 0)
+    if (iResult >= 0)
     {
-        // 백로그 큐에 소켓이 있다면, accept 진행
-        if (FD_ISSET(listenSocket, &ReadSet))
-        {
-            --iResult;
-
-            // accept 이벤트 처리. 접속 및 CSession 생성
-            netProc_Accept();
-        }
-
         // listen 소켓을 제외한 세션 처리
-        auto iter2 = iter;
         for (UINT8 i = 0; i < iCSessionSize; ++i)
         {
             iter2--;
@@ -159,10 +159,14 @@ void CNetIOManager::netIOProcess(void)
                 --iResult;
 
                 // recv 이벤트 처리. 메시지 수신 및 메시지 분기 로직 처리
+                // 같은 프레임에 죽었다고 하더라도 이미 보낸 것 까지는 처리해주기로 했다. 아니면 나중에 접속했다는 이유로 같은 프레임에 손해를 보기 때문이다.
+                // 만약 소켓 에러로 인한 isAlive = false 처리라면 recv하면서 에러가 감지되며 return 될 것이다. 그러니 이렇게 진행.
                 if ((*iter2).second->isAlive)
                 {
+                    (*iter2).second->recvCnt++;
+                    (*iter2).second->lastRecvTime = timerManager.GetCurrServerTime();
+
                     netProc_Recv((*iter2).second);
-                    ++netProc_RecvCnt;
                 }
             }
 
@@ -173,11 +177,23 @@ void CNetIOManager::netIOProcess(void)
                 // send 이벤트 처리. 메시지 송신
                 if ((*iter2).second->isAlive)
                 {
+                    (*iter2).second->sendCnt++;
+                    (*iter2).second->lastSendTime = timerManager.GetCurrServerTime();
+
                     netProc_Send((*iter2).second);
-                    ++netProc_SendCnt;
                 }
             }
         }
+
+        // 백로그 큐에 소켓이 있다면, accept 진행
+        if (FD_ISSET(listenSocket, &ReadSet))
+        {
+            --iResult;
+
+            // accept 이벤트 처리. 접속 및 CSession 생성
+            netProc_Accept();
+        }
+
     }
     else if (iResult == SOCKET_ERROR)
     {
@@ -196,27 +212,33 @@ void CNetIOManager::netProc_Accept(void)
     CWinSockManager& winSockManager = CWinSockManager::GetInstance();
     SOCKET listenSocket = winSockManager.GetListenSocket();
 
-    // accept 시도
-    acceptedSocket = winSockManager.Accept(ClientAddr);
+    while (true)
+    {
+        // accept 시도
+        acceptedSocket = winSockManager.Accept(ClientAddr);
 
-    // 세션 생성 후 세션 매니저에서 관리
-    CSessionManager& sessionManger = CSessionManager::GetInstance();
-    CSession* pSession = createSession(acceptedSocket, ClientAddr);
-    g_SessionHashMap.emplace(acceptedSocket, pSession);
+        if (WSAGetLastError() == WSAEWOULDBLOCK || acceptedSocket == INVALID_SOCKET)
+            break;
 
-    // 세션과 연결된 오브젝트 생성
-    CObject* pObj = m_callbackAcceptCreate();
+        // 세션 생성 후 세션 매니저에서 관리
+        CSessionManager& sessionManger = CSessionManager::GetInstance();
+        CSession* pSession = createSession(acceptedSocket, ClientAddr);
+        g_SessionHashMap.emplace(acceptedSocket, pSession);
 
-    // 오브젝트에 세션 정보 등록
-    pObj->m_pSession = pSession;
-    pSession->pObj = pObj;
+        // 세션과 연결된 오브젝트 생성
+        CObject* pObj = m_callbackAcceptCreate();
 
-    // 오브젝트 생성 이후 처리되어야할 함수 호출
-    m_callbackAcceptAfter(pObj);
+        // 오브젝트에 세션 정보 등록
+        pObj->m_pSession = pSession;
+        pSession->pObj = pObj;
 
-    // 생성된 오브젝트 오브젝트 매니저에서 관리
-    static CObjectManager& ObjectManager = CObjectManager::GetInstance();
-    ObjectManager.RegisterObject(pObj);
+        // 오브젝트 생성 이후 처리되어야할 함수 호출
+        m_callbackAcceptAfter(pObj);
+
+        // 생성된 오브젝트 오브젝트 매니저에서 관리
+        static CObjectManager& ObjectManager = CObjectManager::GetInstance();
+        ObjectManager.RegisterObject(pObj);
+    }
 }
 
 
@@ -359,5 +381,7 @@ void CNetIOManager::netProc_Recv(CSession* pSession)
             NotifyClientDisconnected(pSession);
             break;
         }
+        else
+            pSession->pObj->SetCurTimeout();
     }
 }

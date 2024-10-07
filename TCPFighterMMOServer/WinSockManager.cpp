@@ -120,7 +120,7 @@ SOCKET CWinSockManager::Accept(SOCKADDR_IN& ClientAddr) noexcept
 
     if (ClientSocket == INVALID_SOCKET)
     {
-        std::cout << "Error : Accept(), " << WSAGetLastError() << "\n";
+        //std::cout << "Error : Accept(), " << WSAGetLastError() << "\n";
     }
     // accept를 여러번 할꺼면 WOULDBLOCK이 나올 때 까지 반복해서 accept를 시도해야한다. 하지만 여기선 1회만 할 것이므로 INVALID 처리한 하고 넘어감.
 

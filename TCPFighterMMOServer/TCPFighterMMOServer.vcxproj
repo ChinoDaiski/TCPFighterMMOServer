@@ -141,6 +141,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CircularQueue.cpp" />
     <ClCompile Include="Content.cpp" />
     <ClCompile Include="CustomException.cpp" />
     <ClCompile Include="LogManager.cpp" />
@@ -165,6 +166,7 @@
     <ClCompile Include="WinSockManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CircularQueue.h" />
     <ClInclude Include="Content.h" />
     <ClInclude Include="CustomException.h" />
     <ClInclude Include="DebugDefines.h" />

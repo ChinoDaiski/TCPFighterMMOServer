@@ -44,7 +44,8 @@ public:
     void LogSystem(Args... args);
 
 private:
-    LogLevel currentLogLevel = dfLOG_LEVEL_DEBUG; // 기본 로그 레벨
+    //LogLevel currentLogLevel = dfLOG_LEVEL_DEBUG; // 기본 로그 레벨
+    LogLevel currentLogLevel = dfLOG_LEVEL_ERROR; // 기본 로그 레벨
 
 private:
     // 기록 관련

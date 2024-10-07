@@ -49,6 +49,37 @@ void Update(void);
 void ServerControl(void);
 void Monitor(void);
 
+
+
+
+
+
+//========================================
+
+constexpr int TICK_PER_FRAME = 40;
+constexpr int FRAME_PER_SECONDS = (1000) / TICK_PER_FRAME;
+
+BOOL g_bShutDown = FALSE;
+extern int g_iSyncCount;
+int g_iDisconCount = 0;
+int g_iDisConByRBFool = 0;
+int g_iDisConByTimeOut = 0;
+
+int g_iOldFrameTick;
+int g_iFpsCheck;
+int g_iTime;
+int g_iFPS;
+int g_iNetworkLoop;
+int g_iFirst;
+
+ULONGLONG g_fpsCheck;
+//========================================
+
+
+
+
+
+
 int main()
 {
     //=====================================================================================================================================
@@ -88,6 +119,29 @@ int main()
     CTimerManager& timerManager = CTimerManager::GetInstance();
 
     timerManager.InitTimer(25);
+
+
+
+
+
+
+
+
+
+
+    //=======================================================
+    g_iNetworkLoop = 0;
+    g_iFirst = timeGetTime();
+    g_iOldFrameTick = g_iFirst;
+    g_iTime = g_iOldFrameTick;
+    g_iFPS = 0;
+    g_iFpsCheck = g_iOldFrameTick;
+    //=======================================================
+
+
+
+
+
 
     //=====================================================================================================================================
     // 메인 로직
@@ -190,9 +244,22 @@ void ServerControl(void)
 // 모니터링 정보를 표시, 저장, 전송하는 경우 사용
 void Monitor(void)
 {
-    //system("cls");
-
-    //playerPool.PrintUsage();
-    //sessionPool.PrintUsage();
-    //packetPool.PrintUsage();
+    ++g_iNetworkLoop;
+    g_iTime = timeGetTime();
+    if (g_iTime - g_iOldFrameTick >= TICK_PER_FRAME)
+    {
+        g_iOldFrameTick = g_iTime - ((g_iTime - g_iFirst) % TICK_PER_FRAME);
+        ++g_iFPS;
+    }
+    if (g_iTime - g_iFpsCheck >= 1000)
+    {
+        g_iFpsCheck += 1000;
+        printf("-----------------------------------------------------\n");
+        printf("FPS : %d\n", g_iFPS);
+        printf("Network Loop Num: %u\n", g_iNetworkLoop);
+        printf("SyncCount : %d\n", g_iSyncCount);
+        printf("-----------------------------------------------------\n");
+        g_iNetworkLoop = 0;
+        g_iFPS = 0;
+    }
 }

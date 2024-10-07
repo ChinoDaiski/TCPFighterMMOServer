@@ -149,7 +149,7 @@ void SendCreationPacketBetween(CObject* pObjectA, CObject* pObjectB)
     CPlayer* pPlayerB = static_cast<CPlayer*>(pObjectB);
 
     // A에게 B에 대한 정보를 생성하는 패킷을 전송
-    SC_CREATE_OTHER_CHARACTER_FOR_SINGLE(pPlayerA->m_pSession, pPlayerB->m_ID, pPlayerB->m_direction, pPlayerB->m_x, pPlayerB->m_y, pPlayerB->m_hp);
+    SC_CREATE_OTHER_CHARACTER_FOR_SINGLE(pPlayerA->m_pSession, pPlayerB->m_ID, pPlayerB->m_facingDirection, pPlayerB->m_x, pPlayerB->m_y, pPlayerB->m_hp);
 
     // B가 움직이고 있다면
     if (pPlayerB->m_FlagField & FLAG_MOVING)
@@ -159,7 +159,7 @@ void SendCreationPacketBetween(CObject* pObjectA, CObject* pObjectB)
     }
 
     // B에게 A에 대한 정보를 생성하는 패킷을 전송
-    SC_CREATE_OTHER_CHARACTER_FOR_SINGLE(pPlayerB->m_pSession, pPlayerA->m_ID, pPlayerA->m_direction, pPlayerA->m_x, pPlayerA->m_y, pPlayerA->m_hp);
+    SC_CREATE_OTHER_CHARACTER_FOR_SINGLE(pPlayerB->m_pSession, pPlayerA->m_ID, pPlayerA->m_facingDirection, pPlayerA->m_x, pPlayerA->m_y, pPlayerA->m_hp);
 
     // A가 움직이고 있다면
     if (pPlayerA->m_FlagField & FLAG_MOVING)

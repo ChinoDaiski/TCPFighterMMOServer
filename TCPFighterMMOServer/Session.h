@@ -30,6 +30,12 @@ public:
 
     CObject* pObj;
 
+    UINT32 recvCnt = 0;
+    UINT32 sendCnt = 0;
+
+    UINT32 lastRecvTime = 0;
+    UINT32 lastSendTime = 0;
+
 private:
     static UINT32 g_ID;
 };

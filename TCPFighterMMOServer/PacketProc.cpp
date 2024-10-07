@@ -16,14 +16,17 @@
 #include "TimerManager.h"
 #include "LogManager.h"
 
+
 static CSectorManager& sectorManager = CSectorManager::GetInstance();
 static CObjectManager& objectManager = CObjectManager::GetInstance();
 static CTimerManager& timerManager = CTimerManager::GetInstance();
 static LogManager& logManager = LogManager::GetInstance();
 
+int g_iSyncCount = 0;
+
 bool PacketProc(CSession* pSession, PACKET_TYPE packetType, CPacket* pPacket)
 {
-    pSession->pObj->SetCurTimeout();
+    pSession->pObj->m_packetQueue.enqueue(std::make_tuple(packetType, timerManager.GetCurrServerTime(), pSession->SessionID));
 
     switch (packetType)
     {
@@ -143,7 +146,8 @@ bool CS_MOVE_START(CSession* pSession, UINT8 direction, UINT16 x, UINT16 y)
         )
     {
         // 클라에게 서버에서 플레이어의 위치를 보낸다.
-        SC_SYNC_FOR_SINGLE(pSession, pPlayer->m_ID, posX, posY);
+        SC_SYNC_FOR_SINGLE(pSession, pPlayer->m_ID, posX, posY); 
+        g_iSyncCount++;
 
         // 싱크가 난 이유를 찾기 위해 지터를 측정
         timerManager.PrintJitterStats();
@@ -205,6 +209,7 @@ bool CS_MOVE_STOP(CSession* pSession, UINT8 direction, UINT16 x, UINT16 y)
     {
         // 클라에게 서버에서 플레이어의 위치를 보낸다.
         SC_SYNC_FOR_SINGLE(pSession, pPlayer->m_ID, posX, posY);
+        g_iSyncCount++;
 
         // 싱크가 난 이유를 찾기 위해 지터를 측정
         timerManager.PrintJitterStats();

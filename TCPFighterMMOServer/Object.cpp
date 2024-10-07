@@ -7,8 +7,16 @@
 #include "SectorManager.h"
 #include "TimerManager.h"
 
+#include "Packet.h"
+#include "CircularQueue.h"
+
+#include "LogManager.h"
+
 UINT32 CObject::g_ID = 0;
+UINT32 CObject::m_maxLastTimeoutCheckTime = 0;
+
 static CTimerManager& timerManager = CTimerManager::GetInstance();
+static LogManager& logManager = LogManager::GetInstance();
 
 CObject::CObject(UINT16 _x, UINT16 _y) noexcept
 	: m_x(_x), m_y(_y), m_pSession(nullptr), m_bDead(false)
@@ -57,9 +65,32 @@ void CObject::LateUpdate(void)
 void CObject::CheckTimeout(void)
 {
 	UINT32 currSeverTime = timerManager.GetCurrServerTime();
+
+	if (m_maxLastTimeoutCheckTime < (currSeverTime - m_lastTimeoutCheckTime))
+	{
+		m_maxLastTimeoutCheckTime = (currSeverTime - m_lastTimeoutCheckTime);
+		//std::cout << m_maxLastTimeoutCheckTime <<"\n";
+
+		logManager.LogDebug(
+			"Timeout Max Record\n",
+			"SessionID : ", m_pSession->SessionID,
+			"\nMaxLastTimeoutCheckTime : ", m_maxLastTimeoutCheckTime,
+			"Port : ", m_pSession->port
+		);
+	}
+
 	if ((currSeverTime - m_lastTimeoutCheckTime) > dfNETWORK_PACKET_RECV_TIMEOUT)
 	{
 		m_bDead = true;
+
+		logManager.LogDebug(
+			"Timeout Error!!!\n",
+			"SessionID : ", m_pSession->SessionID,
+			"\nMaxLastTimeoutCheckTime : ", m_maxLastTimeoutCheckTime,
+			"Port : ", m_pSession->port
+		);
+
+		//DebugBreak();
 	}
 }
 
