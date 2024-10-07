@@ -13,9 +13,13 @@
 #include "Player.h"
 
 #include "MemoryPoolManager.h"
+#include "TimerManager.h"
+#include "LogManager.h"
 
 static CSectorManager& sectorManager = CSectorManager::GetInstance();
 static CObjectManager& objectManager = CObjectManager::GetInstance();
+static CTimerManager& timerManager = CTimerManager::GetInstance();
+static LogManager& logManager = LogManager::GetInstance();
 
 bool PacketProc(CSession* pSession, PACKET_TYPE packetType, CPacket* pPacket)
 {
@@ -131,27 +135,39 @@ bool CS_MOVE_START(CSession* pSession, UINT8 direction, UINT16 x, UINT16 y)
 
     UINT16 posX, posY;
     pPlayer->getPosition(posX, posY);
+
+    // 클라이언트의 좌표가 서버와 잘못되었지만 서버의 좌표가 맞다고 봐야하기 때문에 싱크 메시지에 서버가 관리하는 좌표를 넣어 클라가 맞추게 한다.
     if (
         std::abs(posX - x) > dfERROR_RANGE ||
         std::abs(posY - y) > dfERROR_RANGE
         )
     {
-        // 클라이언트의 좌표가 서버와 잘못되었지만 서버의 좌표가 맞다고 봐야하기 때문에 싱크 메시지에 서버가 관리하는 좌표를 넣어 클라가 맞추게 한다.
+        // 클라에게 서버에서 플레이어의 위치를 보낸다.
         SC_SYNC_FOR_SINGLE(pSession, pPlayer->m_ID, posX, posY);
 
-        //NotifyClientDisconnected(pSession);
+        // 싱크가 난 이유를 찾기 위해 지터를 측정
+        timerManager.PrintJitterStats();
 
-        // 로그 찍을거면 여기서 찍을 것
-        /*int gapX = std::abs(posX - x);
-        int gapY = std::abs(posY - y);*/
-
-        //return false;
+        // 서버와 클라에서 플레이어의 위치와 방향을 찍어서 어떻게 싱크가 났는지 확인.
+        logManager.LogDebug(
+            "Player\n"
+            "Server\nPos : ", posX, ", ", posY, "  Direction : ", static_cast<int>(pPlayer->GetDirection()), "\n"
+            "Client\nPos : ", x, ", ", y, "  Direction : ", static_cast<int>(direction), "\n"
+            "Pre Sector Index : ", pPlayer->m_preSectorPos.x, ", ", pPlayer->m_preSectorPos.x, "\n"
+            "Cur Sector Index : ", pPlayer->m_curSectorPos.x, ", ", pPlayer->m_curSectorPos.x, "\n"
+            "Cur Sector PlayerCnt : ", sectorManager.GetSectorInfo(pPlayer->m_curSectorPos.x, pPlayer->m_curSectorPos.y)->GetSectorObjectMap().size(), "\n\n"
+        );
+    }
+    // 그다지 오차가 크기 않을 경우 클라의 위치를 서버가 믿어준다.
+    else
+    {
+        // ==========================================================================================================
+        // 동작을 변경. 지금 구현에선 동작번호가 방향값. 내부에서 바라보는 방향도 변경
+        // ==========================================================================================================
+        pPlayer->SetPosition(x, y);
+        pPlayer->SetDirection(direction);
     }
 
-    // ==========================================================================================================
-    // 동작을 변경. 지금 구현에선 동작번호가 방향값. 내부에서 바라보는 방향도 변경
-    // ==========================================================================================================
-    pPlayer->SetDirection(direction);
 
     // ==========================================================================================================
     // 당사자를 제외한, 현재 접속중인 모든 사용자에게 패킷을 뿌림.
@@ -180,21 +196,39 @@ bool CS_MOVE_STOP(CSession* pSession, UINT8 direction, UINT16 x, UINT16 y)
 
     UINT16 posX, posY;
     pPlayer->getPosition(posX, posY);
+
+    // 클라이언트의 좌표가 서버와 잘못되었지만 서버의 좌표가 맞다고 봐야하기 때문에 싱크 메시지에 서버가 관리하는 좌표를 넣어 클라가 맞추게 한다.
     if (
         std::abs(posX - x) > dfERROR_RANGE ||
         std::abs(posY - y) > dfERROR_RANGE
         )
     {
-        // 클라이언트의 좌표가 서버와 잘못되었지만 서버의 좌표가 맞다고 봐야하기 때문에 싱크 메시지에 서버가 관리하는 좌표를 넣어 클라가 맞추게 한다.
+        // 클라에게 서버에서 플레이어의 위치를 보낸다.
         SC_SYNC_FOR_SINGLE(pSession, pPlayer->m_ID, posX, posY);
+
+        // 싱크가 난 이유를 찾기 위해 지터를 측정
+        timerManager.PrintJitterStats();
+
+        // 서버와 클라에서 플레이어의 위치와 방향을 찍어서 어떻게 싱크가 났는지 확인.
+        logManager.LogDebug(
+            "Player\n"
+            "Server\nPos : ", posX, ", ", posY, "  Direction : ", static_cast<int>(pPlayer->GetDirection()), "\n"
+            "Client\nPos : ", x, ", ", y, "  Direction : ", static_cast<int>(direction), "\n"
+            "Pre Sector Index : ", pPlayer->m_preSectorPos.x, ", ", pPlayer->m_preSectorPos.x, "\n"
+            "Cur Sector Index : ", pPlayer->m_curSectorPos.x, ", ", pPlayer->m_curSectorPos.x, "\n"
+            "Cur Sector PlayerCnt : ", sectorManager.GetSectorInfo(pPlayer->m_curSectorPos.x, pPlayer->m_curSectorPos.y)->GetSectorObjectMap().size(), "\n\n"
+        );
     }
-
-
-    //=====================================================================================================================================
-    // 1. 받은 데이터 처리
-    //=====================================================================================================================================
-    pPlayer->SetDirection(direction);
-    pPlayer->SetPosition(x, y);
+    // 그다지 오차가 크기 않을 경우 클라의 위치를 서버가 믿어준다.
+    else
+    {
+        //=====================================================================================================================================
+        // 1. 받은 데이터 처리
+        //=====================================================================================================================================
+        // 클라의 위치를 서버에서 맞추기 위함 
+        pPlayer->SetDirection(direction);
+        pPlayer->SetPosition(x, y);
+    }
 
     //=====================================================================================================================================
     // 2. PACKET_SC_MOVE_STOP 를 브로드캐스팅
@@ -226,7 +260,7 @@ bool CS_ATTACK1(CSession* pSession, UINT8 direction, UINT16 x, UINT16 y)
     //=====================================================================================================================================
     // 1. dfPACKET_SC_ATTACK1 을 브로드캐스팅
     //=====================================================================================================================================
-    pPlayer->SetPosition(x, y);
+    //pPlayer->SetPosition(x, y);
 
     CSector* pCurSector = sectorManager.GetSectorInfo(pPlayer->m_curSectorPos.x, pPlayer->m_curSectorPos.y);
     SC_ATTACK1_FOR_AROUND(pSession, pCurSector, pPlayer->m_ID, pPlayer->GetDirection(), x, y);
@@ -307,7 +341,7 @@ bool CS_ATTACK2(CSession* pSession, UINT8 direction, UINT16 x, UINT16 y)
     //=====================================================================================================================================
     // 1. dfPACKET_SC_ATTACK2 을 브로드캐스팅
     //=====================================================================================================================================
-    pPlayer->SetPosition(x, y);
+    //pPlayer->SetPosition(x, y);
 
     CSector* pCurSector = sectorManager.GetSectorInfo(pPlayer->m_curSectorPos.x, pPlayer->m_curSectorPos.y);
     SC_ATTACK2_FOR_AROUND(pSession, pCurSector, pPlayer->m_ID, pPlayer->GetDirection(), x, y);
@@ -387,7 +421,7 @@ bool CS_ATTACK3(CSession* pSession, UINT8 direction, UINT16 x, UINT16 y)
     //=====================================================================================================================================
     // 1. dfPACKET_SC_ATTACK3 을 브로드캐스팅
     //=====================================================================================================================================
-    pPlayer->SetPosition(x, y);
+    //pPlayer->SetPosition(x, y);
 
     CSector* pCurSector = sectorManager.GetSectorInfo(pPlayer->m_curSectorPos.x, pPlayer->m_curSectorPos.y);
     SC_ATTACK3_FOR_AROUND(pSession, pCurSector, pPlayer->m_ID, pPlayer->GetDirection(), x, y);

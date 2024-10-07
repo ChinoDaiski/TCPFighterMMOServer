@@ -50,9 +50,9 @@ void CPlayer::Move(void)
     // 범위 검사
     if (
         (resultX >= dfRANGE_MOVE_RIGHT) ||
-        (resultX <= dfRANGE_MOVE_LEFT) ||
+        (resultX < dfRANGE_MOVE_LEFT) ||
         (resultY >= dfRANGE_MOVE_BOTTOM) ||
-        (resultY <= dfRANGE_MOVE_TOP)
+        (resultY < dfRANGE_MOVE_TOP)
         )
         return;
     // 범위 검사 통과시

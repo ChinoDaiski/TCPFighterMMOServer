@@ -104,7 +104,7 @@ void CNetIOManager::netIOProcess(void)
         }
     }
 
-    // 연결된 세션의 갯수가 64개 이하라면
+    // 연결된 세션의 갯수가 64개 미만이라면
 
     // 셋 초기화
     FD_ZERO(&ReadSet);

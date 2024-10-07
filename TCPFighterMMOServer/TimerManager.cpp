@@ -37,12 +37,12 @@ bool CTimerManager::CheckFrame(void)
 	// 현재 로직 시간 업데이트
 	m_currentMainLogicTime = timeGetTime();
 
-#ifdef CHECK_GITTER
+#ifdef MEASURE_GITTER
 
 	// 지터 측정
 	MeasureJitter();
 
-#endif // CHECK_GITTER
+#endif // MEASURE_GITTER
 
 #ifdef CHECK_FPS
 
@@ -80,7 +80,7 @@ bool CTimerManager::CheckFrame(void)
 
 	m_currentServerTime += m_givenFrameTime;
 
-#ifdef CHECK_GITTER
+#ifdef CHECK_GITTE
 
 	// 1초마다 지터 통계 출력
 	if ((m_currentServerTime - m_standardServerTime) >= 1000) {
