@@ -4,6 +4,12 @@
 #include "SessionManager.h"
 #include "MakePacket.h"
 #include "SectorManager.h"
+#include "TimerManager.h"
+
+#include "LogManager.h"
+
+static LogManager& logManager = LogManager::GetInstance();
+static CTimerManager& timerManager = CTimerManager::GetInstance();
 
 int dir[8][2] = {
     {-1, 0},	// LL
@@ -148,6 +154,11 @@ void SendCreationPacketBetween(CObject* pObjectA, CObject* pObjectB)
     CPlayer* pPlayerA = static_cast<CPlayer*>(pObjectA);
     CPlayer* pPlayerB = static_cast<CPlayer*>(pObjectB);
 
+    // 컨텐츠 에러 검증용
+    logManager.SaveLogToBinary(
+        "[ ", "CREATE_OTHER", " ] ", "[ MY ID : ", pPlayerA->m_ID, " ], [YOUR ID : ", pPlayerB->m_ID, "] [ yourPos : ", pPlayerB->m_x, ", ", pPlayerB->m_y, " ] [ your dir : ", static_cast<int>(pPlayerB->GetDirection()), " ] [ your curSector : ", pPlayerB->m_curSectorPos.x, ", ", pPlayerB->m_curSectorPos.y, " ] [ serverTime : ", timerManager.GetCurrServerTime()," ]\n"
+    );
+
     // A에게 B에 대한 정보를 생성하는 패킷을 전송
     SC_CREATE_OTHER_CHARACTER_FOR_SINGLE(pPlayerA->m_pSession, pPlayerB->m_ID, pPlayerB->m_facingDirection, pPlayerB->m_x, pPlayerB->m_y, pPlayerB->m_hp);
 
@@ -157,6 +168,14 @@ void SendCreationPacketBetween(CObject* pObjectA, CObject* pObjectB)
         // A에게 B가 움직인다고 보냄
         SC_MOVE_START_FOR_SINGLE(pPlayerA->m_pSession, pPlayerB->m_ID, pPlayerB->m_direction, pPlayerB->m_x, pPlayerB->m_y);
     }
+
+
+
+
+    // 컨텐츠 에러 검증용
+    logManager.SaveLogToBinary(
+        "[ ", "CREATE_OTHER", " ] ", "[ MY ID : ", pPlayerB->m_ID, " ], [YOUR ID : ", pPlayerA->m_ID, "] [ yourPos : ", pPlayerA->m_x, ", ", pPlayerA->m_y, " ] [ your dir : ", static_cast<int>(pPlayerA->GetDirection()), " ] [ your curSector : ", pPlayerA->m_curSectorPos.x, ", ", pPlayerA->m_curSectorPos.y, " ] [ serverTime : ", timerManager.GetCurrServerTime(), " ]\n"
+    );
 
     // B에게 A에 대한 정보를 생성하는 패킷을 전송
     SC_CREATE_OTHER_CHARACTER_FOR_SINGLE(pPlayerB->m_pSession, pPlayerA->m_ID, pPlayerA->m_facingDirection, pPlayerA->m_x, pPlayerA->m_y, pPlayerA->m_hp);
@@ -177,6 +196,19 @@ void SendDestructionPacketBetween(CObject* pObjectA, CObject* pObjectB)
     // A에게 B에 대한 정보를 삭제하는 패킷을 전송
     SC_DELETE_CHARACTER_FOR_SINGLE(pPlayerA->m_pSession, pPlayerB->m_ID);
 
+    // 컨텐츠 에러 검증용
+    logManager.SaveLogToBinary(
+        "[ ", "DELETE_OTHER", " ] ", "[ MY ID : ", pPlayerA->m_ID, " ], [YOUR ID : ", pPlayerB->m_ID, "] [ yourPos : ", pPlayerB->m_x, ", ", pPlayerB->m_y, " ] [ your dir : ", static_cast<int>(pPlayerB->GetDirection()), " ] [ your curSector : ", pPlayerB->m_curSectorPos.x, ", ", pPlayerB->m_curSectorPos.y, " ] [ serverTime : ", timerManager.GetCurrServerTime(), " ]\n"
+    );
+
+
+
+
     // B에게 A에 대한 정보를 삭제하는 패킷을 전송
     SC_DELETE_CHARACTER_FOR_SINGLE(pPlayerB->m_pSession, pPlayerA->m_ID);
+
+    // 컨텐츠 에러 검증용
+    logManager.SaveLogToBinary(
+        "[ ", "DELETE_OTHER", " ] ", "[ MY ID : ", pPlayerB->m_ID, " ], [YOUR ID : ", pPlayerA->m_ID, "] [ yourPos : ", pPlayerA->m_x, ", ", pPlayerA->m_y, " ] [ your dir : ", static_cast<int>(pPlayerA->GetDirection()), " ] [ your curSector : ", pPlayerA->m_curSectorPos.x, ", ", pPlayerA->m_curSectorPos.y, " ] [ serverTime : ", timerManager.GetCurrServerTime(), " ]\n"
+    );
 }

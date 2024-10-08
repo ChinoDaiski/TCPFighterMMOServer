@@ -170,14 +170,14 @@ void CSectorManager::CalculateSectorChanges(CObject* pObject)
                 y = pObject->m_curSectorPos.y;
 
                 m_sectorsToAdd.push_back(POINT{ x + 1, y });     // 우측
+                m_sectorsToAdd.push_back(POINT{ x + 1, y - 1 }); // 우상단
                 m_sectorsToAdd.push_back(POINT{ x + 1, y + 1 }); // 우하단
                 m_sectorsToAdd.push_back(POINT{ x, y + 1 });     // 하단
                 m_sectorsToAdd.push_back(POINT{ x - 1, y + 1 }); // 좌하단
-                m_sectorsToAdd.push_back(POINT{ x + 1, y - 1 }); // 우상단
             }
         }
         // 상하좌우 이동
-        else if (moveDirX != 0 || moveDirY != 0) {
+        else if (moveDirX == 0 || moveDirY == 0) {
             if (moveDirX == -1 && moveDirY == 0) { // 좌
                 m_sectorsToDelete.push_back(POINT{ x + 1, y - 1 }); // 우상단
                 m_sectorsToDelete.push_back(POINT{ x + 1, y });     // 우측

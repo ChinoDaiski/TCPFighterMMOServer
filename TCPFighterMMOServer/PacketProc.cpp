@@ -17,17 +17,15 @@
 #include "LogManager.h"
 
 
-static CSectorManager& sectorManager = CSectorManager::GetInstance();
-static CObjectManager& objectManager = CObjectManager::GetInstance();
+CSectorManager& sectorManager = CSectorManager::GetInstance();
+CObjectManager& objectManager = CObjectManager::GetInstance();
 static CTimerManager& timerManager = CTimerManager::GetInstance();
-static LogManager& logManager = LogManager::GetInstance();
+LogManager& logManager = LogManager::GetInstance();
 
 int g_iSyncCount = 0;
 
 bool PacketProc(CSession* pSession, PACKET_TYPE packetType, CPacket* pPacket)
 {
-    pSession->pObj->m_packetQueue.enqueue(std::make_tuple(packetType, timerManager.GetCurrServerTime(), pSession->SessionID));
-
     switch (packetType)
     {
     case PACKET_TYPE::CS_MOVE_START:
@@ -139,6 +137,11 @@ bool CS_MOVE_START(CSession* pSession, UINT8 direction, UINT16 x, UINT16 y)
     UINT16 posX, posY;
     pPlayer->getPosition(posX, posY);
 
+    // 컨텐츠 에러 검증용
+    logManager.SaveLogToBinary(
+        "[ ", "MOVE_START", " ] ", "[ MY ID : ", pSession->SessionID, " ] [ curPos : ", posX, ", ", posY, " ] [ dir : ", static_cast<int>(pPlayer->GetDirection())," ] [ curSector : ", pPlayer->m_curSectorPos.x, ", ", pPlayer->m_curSectorPos.y, " ] [ serverTime : ", timerManager.GetCurrServerTime(), " ]\n"
+    );
+
     // 클라이언트의 좌표가 서버와 잘못되었지만 서버의 좌표가 맞다고 봐야하기 때문에 싱크 메시지에 서버가 관리하는 좌표를 넣어 클라가 맞추게 한다.
     if (
         std::abs(posX - x) > dfERROR_RANGE ||
@@ -200,6 +203,11 @@ bool CS_MOVE_STOP(CSession* pSession, UINT8 direction, UINT16 x, UINT16 y)
 
     UINT16 posX, posY;
     pPlayer->getPosition(posX, posY);
+
+    // 컨텐츠 에러 검증용
+    logManager.SaveLogToBinary(
+        "[ ", "MOVE_STOP", " ] ", "[ MY ID : ", pSession->SessionID, " ] [ curPos : ", posX, ", ", posY, " ] [ dir : ", static_cast<int>(pPlayer->GetDirection()), " ] [ curSector : ", pPlayer->m_curSectorPos.x, ", ", pPlayer->m_curSectorPos.y, " ] [ serverTime : ", timerManager.GetCurrServerTime(), " ]\n"
+    );
 
     // 클라이언트의 좌표가 서버와 잘못되었지만 서버의 좌표가 맞다고 봐야하기 때문에 싱크 메시지에 서버가 관리하는 좌표를 넣어 클라가 맞추게 한다.
     if (

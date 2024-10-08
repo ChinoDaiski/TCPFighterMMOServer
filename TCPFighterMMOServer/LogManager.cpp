@@ -26,6 +26,9 @@ LogManager::LogManager() noexcept
 	if (!m_logFile.is_open()) {
 		std::cerr << "Failed to open log file: " << fileName << std::endl;
 	}
+
+	// 바이너리 로그 파일 열기
+	m_binLogFile.open("log.bin", std::ios::binary | std::ios::app);
 }
 
 LogManager::~LogManager() noexcept
@@ -34,6 +37,11 @@ LogManager::~LogManager() noexcept
     if (m_logFile.is_open()) {
         m_logFile.close();
     }
+
+	// 바이너리 파일 닫기
+	if (m_binLogFile.is_open()) {
+		m_binLogFile.close();
+	}
 }
 
 void LogManager::SetLogLevel(LogLevel level)

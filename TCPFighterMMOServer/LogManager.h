@@ -43,6 +43,10 @@ public:
     template<typename... Args>
     void LogSystem(Args... args);
 
+    // 바이너리 파일에 로그 저장
+    template<typename... Args>
+    void SaveLogToBinary(Args... args);
+
 private:
     //LogLevel currentLogLevel = dfLOG_LEVEL_DEBUG; // 기본 로그 레벨
     LogLevel currentLogLevel = dfLOG_LEVEL_ERROR; // 기본 로그 레벨
@@ -50,6 +54,7 @@ private:
 private:
     // 기록 관련
     std::ofstream m_logFile;    // 지터와 FPS 데이터를 기록할 파일
+    std::ofstream m_binLogFile; // 바이너리 로그 파일
 
     // 타임스탬프 함수 (std::chrono 사용)
     std::string GetCurrentTime(void);
@@ -93,4 +98,22 @@ inline void LogManager::LogSystem(Args ...args)
     do {
         LogMessage(dfLOG_LEVEL_SYSTEM, "dfLOG_LEVEL_SYSTEM", args...);
     } while (0);
+}
+
+// 바이너리 파일에 로그 저장 함수
+template<typename ...Args>
+inline void LogManager::SaveLogToBinary(Args ...args)
+{
+    std::ostringstream oss;
+    (oss << ... << args); // 가변 인자들을 스트림에 추가
+
+    std::string logData = oss.str();
+
+    std::ofstream binLogFile("log.bin", std::ios::binary | std::ios::app);
+    if (binLogFile.is_open()) {
+        size_t size = logData.size();
+        binLogFile.write(reinterpret_cast<const char*>(&size), sizeof(size_t)); // 로그 크기 기록
+        binLogFile.write(logData.c_str(), size); // 로그 데이터 기록
+        binLogFile.close();
+    }
 }

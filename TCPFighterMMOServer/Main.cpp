@@ -42,7 +42,6 @@
 
 #include "MemoryPoolManager.h"
 
-
 bool g_bShutdown = false;
 
 void Update(void);
@@ -158,10 +157,10 @@ int main()
                 Update();
 
             // 키보드 입력을 통해 게임을 제어할 시 사용
-            ServerControl();
+            //ServerControl();
 
             // 모니터링 정보를 표시, 저장, 전송하는 경우 사용
-            Monitor();
+            //Monitor();
         }
         catch (const std::exception& e)
         {
@@ -213,6 +212,7 @@ void ServerControl(void)
             {
                 std::wcout << L"Control Mode : Press Q - Quit\n";
                 std::wcout << L"Control Mode : Press L - Key Lock\n";
+                std::wcout << L"Control Mode : Press S - Save Queue Log\n";
 
                 bControlMode = true;
             }

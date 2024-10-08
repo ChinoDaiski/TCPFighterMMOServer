@@ -11,6 +11,7 @@
 #include "CircularQueue.h"
 
 #include "LogManager.h"
+#include "NetIOManager.h"
 
 UINT32 CObject::g_ID = 0;
 UINT32 CObject::m_maxLastTimeoutCheckTime = 0;
