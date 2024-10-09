@@ -160,7 +160,7 @@ int main()
             //ServerControl();
 
             // 모니터링 정보를 표시, 저장, 전송하는 경우 사용
-            //Monitor();
+            Monitor();
         }
         catch (const std::exception& e)
         {

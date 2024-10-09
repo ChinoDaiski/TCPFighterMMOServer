@@ -149,7 +149,8 @@ bool CS_MOVE_START(CSession* pSession, UINT8 direction, UINT16 x, UINT16 y)
         )
     {
         // 클라에게 서버에서 플레이어의 위치를 보낸다.
-        SC_SYNC_FOR_SINGLE(pSession, pPlayer->m_ID, posX, posY); 
+        //SC_SYNC_FOR_SINGLE(pSession, pPlayer->m_ID, posX, posY); 
+        SC_SYNC_FOR_AROUND(pSession, sectorManager.GetSectorInfo(pPlayer->m_curSectorPos.x, pPlayer->m_curSectorPos.y), pPlayer->m_ID, posX, posY);
         g_iSyncCount++;
 
         // 싱크가 난 이유를 찾기 위해 지터를 측정
@@ -216,7 +217,8 @@ bool CS_MOVE_STOP(CSession* pSession, UINT8 direction, UINT16 x, UINT16 y)
         )
     {
         // 클라에게 서버에서 플레이어의 위치를 보낸다.
-        SC_SYNC_FOR_SINGLE(pSession, pPlayer->m_ID, posX, posY);
+        //SC_SYNC_FOR_SINGLE(pSession, pPlayer->m_ID, posX, posY);
+        SC_SYNC_FOR_AROUND(pSession, sectorManager.GetSectorInfo(pPlayer->m_curSectorPos.x, pPlayer->m_curSectorPos.y), pPlayer->m_ID, posX, posY);
         g_iSyncCount++;
 
         // 싱크가 난 이유를 찾기 위해 지터를 측정

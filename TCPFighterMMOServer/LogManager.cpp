@@ -29,6 +29,14 @@ LogManager::LogManager() noexcept
 
 	// 바이너리 로그 파일 열기
 	m_binLogFile.open("log.bin", std::ios::binary | std::ios::app);
+
+
+
+	UINT16 capacity = m_oss.str().capacity();
+	m_oss.str("1111111111111111111111111111111");
+	capacity = m_oss.str().capacity();
+	m_oss.str("");
+	capacity = m_oss.str().size();
 }
 
 LogManager::~LogManager() noexcept
@@ -42,6 +50,10 @@ LogManager::~LogManager() noexcept
 	if (m_binLogFile.is_open()) {
 		m_binLogFile.close();
 	}
+}
+
+void LogManager::SaveLogToFile(const std::string& fileName)
+{
 }
 
 void LogManager::SetLogLevel(LogLevel level)

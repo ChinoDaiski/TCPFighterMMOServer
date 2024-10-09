@@ -26,6 +26,9 @@ public:
     LogManager& operator=(const LogManager&) = delete;
 
 public:
+    // 버퍼링된 로그 정보를 파일에 기록
+    void SaveLogToFile(const std::string& fileName);
+
     // 현재 로그 레벨 설정
     void SetLogLevel(LogLevel level);
 
@@ -48,10 +51,16 @@ public:
     void SaveLogToBinary(Args... args);
 
 private:
+    
+
+private:
     //LogLevel currentLogLevel = dfLOG_LEVEL_DEBUG; // 기본 로그 레벨
     LogLevel currentLogLevel = dfLOG_LEVEL_ERROR; // 기본 로그 레벨
 
 private:
+    // 로그 버퍼링을 위한 변수
+    std::ostringstream m_oss;
+
     // 기록 관련
     std::ofstream m_logFile;    // 지터와 FPS 데이터를 기록할 파일
     std::ofstream m_binLogFile; // 바이너리 로그 파일
