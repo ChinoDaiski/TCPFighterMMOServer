@@ -5,6 +5,8 @@
 #include "MakePacket.h"
 #include "SectorManager.h"
 
+#include <sstream>
+
 int dir[8][2] = {
     {-1, 0},	// LL
     {-1, -1},	// LU
@@ -15,6 +17,8 @@ int dir[8][2] = {
     {0, 1},		// DD
     {-1, 1}	    // LD
 };
+
+
 
 CPlayer::CPlayer(UINT16 _x, UINT16 _y, UINT8 _direction, UINT8 _hp) noexcept
 	: CObject{ _x, _y }, m_hp{ _hp }, m_direction{ _direction }
@@ -94,6 +98,8 @@ void CPlayer::SetDirection(int _direction)
     case dfPACKET_MOVE_DIR_LU:
     case dfPACKET_MOVE_DIR_LD:
         m_facingDirection = dfPACKET_MOVE_DIR_LL;
+        break;
+
     default:
         break;
     }
@@ -108,6 +114,15 @@ void CPlayer::Damaged(int _hp)
     }
     else
         m_hp -= _hp;
+
+    m_pSession->debugLogQueue.enqueue(std::make_tuple(
+        m_curSectorPos.x,
+        m_curSectorPos.y,
+        m_direction,
+        m_x,
+        m_y,
+        m_hp
+    ));
 }
 
 void CPlayer::SetSpeed(UINT8 speedX, UINT8 speedY)

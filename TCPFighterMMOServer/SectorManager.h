@@ -56,3 +56,5 @@ private:
     static CreateSectorObjectCallback m_callbackCreateSector;
     static DeleteSectorObjectCallback m_callbackDeleteSector;
 };
+
+

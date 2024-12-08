@@ -4,6 +4,7 @@ class CPacket;
 class CObject;
 
 #include "RingBuffer.h"
+#include "CircularQueue.h"
 
 class CSession
 {
@@ -35,6 +36,8 @@ public:
 
     UINT32 lastRecvTime = 0;
     UINT32 lastSendTime = 0;
+
+    CircularQueue<std::tuple<LONG, LONG, UINT8, UINT16, UINT16, UINT8>> debugLogQueue;
 
 private:
     static UINT32 g_ID;

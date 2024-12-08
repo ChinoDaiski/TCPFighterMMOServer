@@ -12,7 +12,7 @@
 
 #include "LogManager.h"
 
-UINT32 CObject::g_ID = 0;
+UINT32 CObject::g_ID = 1;
 UINT32 CObject::m_maxLastTimeoutCheckTime = 0;
 
 static CTimerManager& timerManager = CTimerManager::GetInstance();
@@ -71,12 +71,12 @@ void CObject::CheckTimeout(void)
 		m_maxLastTimeoutCheckTime = (currSeverTime - m_lastTimeoutCheckTime);
 		//std::cout << m_maxLastTimeoutCheckTime <<"\n";
 
-		logManager.LogDebug(
+		/*logManager.LogDebug(
 			"Timeout Max Record\n",
 			"SessionID : ", m_pSession->SessionID,
 			"\nMaxLastTimeoutCheckTime : ", m_maxLastTimeoutCheckTime,
 			"Port : ", m_pSession->port
-		);
+		);*/
 	}
 
 	if ((currSeverTime - m_lastTimeoutCheckTime) > dfNETWORK_PACKET_RECV_TIMEOUT)

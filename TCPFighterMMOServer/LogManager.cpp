@@ -41,6 +41,17 @@ void LogManager::SetLogLevel(LogLevel level)
     currentLogLevel = level;
 }
 
+void LogManager::saveLog(void)
+{
+	// 로그 파일 닫기
+	if (m_logFile.is_open()) {
+		for (int i = 0; i < logQueue.rear; ++i)
+			m_logFile << logQueue.queue[i] << std::endl;
+
+		logQueue.rear = 0;
+	}
+}
+
 std::string LogManager::GetCurrentTime(void)
 {
     auto now = std::chrono::system_clock::now();

@@ -9,8 +9,11 @@
 
 #include "MemoryPoolManager.h"
 
+#include "LogManager.h"
+
 static CSectorManager& sectorManager = CSectorManager::GetInstance();
 static CObjectManager& objectManager = CObjectManager::GetInstance();
+static LogManager& logManager = LogManager::GetInstance();
 
 std::unordered_map<SOCKET, CSession*> g_SessionHashMap; // 서버에 접속한 세션들에 대한 정보
 
@@ -22,6 +25,15 @@ CSessionManager::CSessionManager() noexcept
 
 CSessionManager::~CSessionManager() noexcept
 {
+}
+
+
+std::string makeDebugLog1(long sectorPosX, long sectorPosY, unsigned char direction, unsigned short posX, unsigned short posY, unsigned char hp)
+{
+    std::stringstream ss;
+    ss << "[ SECTOR : " << sectorPosX << ", " << sectorPosY << " ] [ direction : " << direction << " ] [ curPos : " << posX << ", " << posY << " ] [ hp : " << hp << " ]";
+
+    return ss.str();
 }
 
 void CSessionManager::Update(void)
@@ -73,11 +85,11 @@ void BroadcastData(CSession* excludeSession, PACKET_HEADER* pPacketHeader, UINT3
             // 다만, 링버퍼의 크기가 가득 찰 수 있는 상황 중 tcp 윈도우 사이즈가 0인 경우엔 resize로 해결이 안될 확률이 높으니 끊는게 맞음. 
             // 할지 말지는 오류 생길시 가서 테스트하면서 진행
 
-            NotifyClientDisconnected(pSession);
-
             int error = WSAGetLastError();
             std::cout << "Error : BroadcastData(), sendQ가 가득찼음" << error << "\n";
             DebugBreak();
+
+            NotifyClientDisconnected(pSession);
         }
     }
 }
@@ -104,11 +116,11 @@ void BroadcastData(CSession* excludeSession, CPacket* pPacket, UINT32 dataSize)
             // 다만, 링버퍼의 크기가 가득 찰 수 있는 상황 중 tcp 윈도우 사이즈가 0인 경우엔 resize로 해결이 안될 확률이 높으니 끊는게 맞음. 
             // 할지 말지는 오류 생길시 가서 테스트하면서 진행
 
-            NotifyClientDisconnected(pSession);
-
             int error = WSAGetLastError();
             std::cout << "Error : BroadcastData(), sendQ가 가득찼음" << error << "\n";
             DebugBreak();
+
+            NotifyClientDisconnected(pSession);
         }
     }
 }
@@ -128,6 +140,31 @@ void NotifyClientDisconnected(CSession* disconnectedCSession)
     //    DebugBreak();
     //}
 
+
+    // 진짜 잘못된 이유로 인해 문제가 생겼다면 그동안 찍었던 로그를 출력
+    // 체력이 0이 됬다거나 timeout으로 인해 먼저 끊어야하는 상황이 아니라면 모두 잘못된 끊어짐
+
+    // 죽지 않았는데 isAlive를 false로 만드는 경우
+    if (!disconnectedCSession->pObj->isDead())
+    {
+        DebugBreak();
+
+        //logManager.LogError(disconnectedCSession->debugLogQueue.rear);
+
+        //// 현재 로그가 어디까지 찍혔는데 출력
+        //for (int i = 0; i < 30; ++i)
+        //{
+        //    logManager.LogError(makeDebugLog1(
+        //        std::get<0>(disconnectedCSession->debugLogQueue.queue[i]),
+        //        std::get<1>(disconnectedCSession->debugLogQueue.queue[i]),
+        //        (unsigned int)std::get<2>(disconnectedCSession->debugLogQueue.queue[i]),
+        //        std::get<3>(disconnectedCSession->debugLogQueue.queue[i]),
+        //        std::get<4>(disconnectedCSession->debugLogQueue.queue[i]),
+        //        (unsigned int)std::get<5>(disconnectedCSession->debugLogQueue.queue[i])
+        //    ));
+        //}
+    }
+
     disconnectedCSession->isAlive = false;
 }
 
@@ -146,11 +183,11 @@ void UnicastData(CSession* includeSession, PACKET_HEADER* pPacket, UINT32 dataSi
         // 다만, 링버퍼의 크기가 가득 찰 수 있는 상황 중 tcp 윈도우 사이즈가 0인 경우엔 resize로 해결이 안될 확률이 높으니 끊는게 맞음. 
         // 할지 말지는 오류 생길시 가서 테스트하면서 진행
 
-        NotifyClientDisconnected(includeSession);
-
         int error = WSAGetLastError();
         std::cout << "Error : UnicastData(), sendQ가 가득찼음" << error << "\n";
         DebugBreak();
+
+        NotifyClientDisconnected(includeSession);
     }
 }
 
@@ -170,11 +207,11 @@ void UnicastData(CSession* includeSession, CPacket* pPacket, UINT32 dataSize)
         // 다만, 링버퍼의 크기가 가득 찰 수 있는 상황 중 tcp 윈도우 사이즈가 0인 경우엔 resize로 해결이 안될 확률이 높으니 끊는게 맞음. 
         // 할지 말지는 오류 생길시 가서 테스트하면서 진행
 
-        NotifyClientDisconnected(includeSession);
-
         int error = WSAGetLastError();
         std::cout << "Error : UnicastData(), sendQ가 가득찼음" << error << "\n";
         DebugBreak();
+
+        NotifyClientDisconnected(includeSession);
     }
 }
 

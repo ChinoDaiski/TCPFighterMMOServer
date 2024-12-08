@@ -1,16 +1,19 @@
 #pragma once
 
+#define CIRCULAR_QUEUE_SIZE 10000
+
+
 template <typename T>
 class CircularQueue {
 public:
     // 생성자
-    CircularQueue(int size = 10) : front(0), rear(-1), capacity(size), count(0) {
-        queue = new T[capacity];  // 동적 배열 할당
+    CircularQueue(int size = CIRCULAR_QUEUE_SIZE) : front(0), rear(-1), capacity(size), count(0) {
+        //queue = new T[capacity];  // 동적 배열 할당
     }
 
     // 소멸자
     ~CircularQueue() {
-        delete[] queue;  // 동적 배열 해제
+        //delete[] queue;  // 동적 배열 해제
     }
 
     // 큐가 비었는지 확인
@@ -25,9 +28,9 @@ public:
 
     // 큐에 데이터 추가 (enqueue)
     void enqueue(const T& data) {
-        if (isFull()) {
+        /*if (isFull()) {
             dequeue();
-        }
+        }*/
         rear = (rear + 1) % capacity;  // 원형 배열 처리
         queue[rear] = data;
         count++;
@@ -35,9 +38,9 @@ public:
 
     // 큐에서 데이터 제거 (dequeue)
     void dequeue() {
-        if (isEmpty()) {
+        /*if (isEmpty()) {
             return;
-        }
+        }*/
         front = (front + 1) % capacity;  // 원형 배열 처리
         count--;
     }
@@ -55,8 +58,8 @@ public:
         return count;
     }
 
-private:
-    T* queue;         // 큐 배열
+public:
+    T queue[CIRCULAR_QUEUE_SIZE];         // 큐 배열
     int front, rear;  // 큐의 앞과 뒤 인덱스
     int capacity;     // 큐의 최대 크기
     int count;        // 현재 큐에 저장된 원소의 개수

@@ -41,7 +41,10 @@
 
 
 #include "MemoryPoolManager.h"
+#include "LogManager.h"
 
+
+CCrashDump dump;
 
 bool g_bShutdown = false;
 
@@ -182,11 +185,14 @@ void Update(void)
 {
     CObjectManager& objectManager = CObjectManager::GetInstance();
     CSessionManager& sessionManager = CSessionManager::GetInstance();
+    LogManager& logManager = LogManager::GetInstance();
 
     objectManager.Update();
     objectManager.LateUpdate();
 
     sessionManager.Update();
+
+    logManager.saveLog();
 }
 
 bool PressKey(WCHAR checkKey, WCHAR input)

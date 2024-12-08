@@ -141,7 +141,7 @@ public:
 
     // 현재 쓰기 위치에서 직접 추가할 수 있는 크기를 반환합니다.
     int DirectEnqueueSize(void) {
-        if (m_iReadPos < m_iWritePos)
+        if (m_iReadPos > m_iWritePos)
             return m_iReadPos - m_iWritePos;
         else
             return m_iCapacity - m_iWritePos;

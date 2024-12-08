@@ -51,7 +51,7 @@ public:
     POINT m_preSectorPos;
     POINT m_curSectorPos;
 
-protected:
+public:
     UINT16 m_x, m_y;
     bool m_bDead;
 

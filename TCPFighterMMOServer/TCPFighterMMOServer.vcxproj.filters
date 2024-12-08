@@ -93,6 +93,9 @@
     <Filter Include="소스 파일\99. Etc\05. CircleQueue">
       <UniqueIdentifier>{bafa0101-28e1-4b13-812c-d322004662ff}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\99. Etc\06. CrashDump">
+      <UniqueIdentifier>{48fa6285-98bf-4e89-9337-123653fdf5e1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CustomException.cpp">
@@ -163,6 +166,9 @@
     </ClCompile>
     <ClCompile Include="CircularQueue.cpp">
       <Filter>소스 파일\99. Etc\05. CircleQueue</Filter>
+    </ClCompile>
+    <ClCompile Include="CrashDump.cpp">
+      <Filter>소스 파일\99. Etc\06. CrashDump</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -247,6 +253,9 @@
     </ClInclude>
     <ClInclude Include="CircularQueue.h">
       <Filter>소스 파일\99. Etc\05. CircleQueue</Filter>
+    </ClInclude>
+    <ClInclude Include="CrashDump.h">
+      <Filter>소스 파일\99. Etc\06. CrashDump</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

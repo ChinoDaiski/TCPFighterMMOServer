@@ -5,6 +5,8 @@
 #include <sstream>
 #include <chrono>
 
+#include "CircularQueue.h"
+
 // 로그 레벨 정의
 enum LogLevel {
     dfLOG_LEVEL_DEBUG = 0,
@@ -43,9 +45,13 @@ public:
     template<typename... Args>
     void LogSystem(Args... args);
 
+public:
+    void saveLog(void);
+
+
 private:
-    //LogLevel currentLogLevel = dfLOG_LEVEL_DEBUG; // 기본 로그 레벨
-    LogLevel currentLogLevel = dfLOG_LEVEL_ERROR; // 기본 로그 레벨
+    LogLevel currentLogLevel = dfLOG_LEVEL_DEBUG; // 기본 로그 레벨
+    //LogLevel currentLogLevel = dfLOG_LEVEL_ERROR; // 기본 로그 레벨
 
 private:
     // 기록 관련
@@ -53,6 +59,8 @@ private:
 
     // 타임스탬프 함수 (std::chrono 사용)
     std::string GetCurrentTime(void);
+
+    CircularQueue<std::string> logQueue;
 };
 
 template<typename ...Args>
@@ -63,11 +71,12 @@ inline void LogManager::LogMessage(LogLevel level, const std::string& levelStr, 
         // 가변 인자들을 스트림에 추가
         (oss << ... << args); // Fold expression (C++17)
 
-        std::ofstream logFile("log.txt", std::ios::app);
-        if (logFile.is_open()) {
-            logFile << "[" << GetCurrentTime() << "][" << levelStr << "] " << oss.str() << std::endl;
-            logFile.close();
-        }
+        logQueue.enqueue(oss.str());
+
+        //if (m_logFile.is_open()) {
+        //    m_logFile << "[" << GetCurrentTime() << "][" << levelStr << "] " << oss.str() << std::endl;
+        //    m_logFile.close();
+        //}
     }
 }
 

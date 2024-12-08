@@ -143,6 +143,7 @@
   <ItemGroup>
     <ClCompile Include="CircularQueue.cpp" />
     <ClCompile Include="Content.cpp" />
+    <ClCompile Include="CrashDump.cpp" />
     <ClCompile Include="CustomException.cpp" />
     <ClCompile Include="LogManager.cpp" />
     <ClCompile Include="MemoryPoolManager.cpp" />
@@ -168,6 +169,7 @@
   <ItemGroup>
     <ClInclude Include="CircularQueue.h" />
     <ClInclude Include="Content.h" />
+    <ClInclude Include="CrashDump.h" />
     <ClInclude Include="CustomException.h" />
     <ClInclude Include="DebugDefines.h" />
     <ClInclude Include="Defines.h" />

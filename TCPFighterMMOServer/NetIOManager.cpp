@@ -13,6 +13,8 @@
 
 #include "TimerManager.h"
 
+#include "Player.h"
+
 CTimerManager& timerManager = CTimerManager::GetInstance();
 
 CNetIOManager::CNetIOManager() noexcept
@@ -260,6 +262,7 @@ void CNetIOManager::netProc_Send(CSession* pSession)
         // 중간에 강제로 연결 끊김.
         if (error == WSAECONNRESET)
         {
+            pSession->pObj->m_bDead = true;
             NotifyClientDisconnected(pSession);
             return;
         }
@@ -308,6 +311,7 @@ void CNetIOManager::netProc_Recv(CSession* pSession)
         // 수신 버퍼와의 연결이 끊어진다는, rst가 왔다는 의미.
         if (error == WSAECONNRESET)
         {
+            pSession->pObj->m_bDead = true;
             // 다른 클라이언트들에 연결이 끊어졌다는 것을 알림.
             NotifyClientDisconnected(pSession);
             return;
@@ -316,6 +320,7 @@ void CNetIOManager::netProc_Recv(CSession* pSession)
         // 상대방 쪽에서 closesocket을 하면 recv 실패
         if (error == WSAECONNABORTED)
         {
+            pSession->pObj->m_bDead = true;
             NotifyClientDisconnected(pSession);
             return;
         }
@@ -378,6 +383,7 @@ void CNetIOManager::netProc_Recv(CSession* pSession)
 
         if (!m_callbackPacketProc(pSession, static_cast<PACKET_TYPE>(header.byType), &Packet))
         {
+            pSession->pObj->m_bDead = true;
             NotifyClientDisconnected(pSession);
             break;
         }
