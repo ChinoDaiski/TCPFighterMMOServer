@@ -40,8 +40,16 @@
 #include <conio.h>
 
 
+#include <process.h>
 #include "MemoryPoolManager.h"
 #include "LogManager.h"
+
+
+
+
+#pragma comment(lib, "PDH_DLL.lib")
+#include "SystemMonitor.h"
+
 
 
 CCrashDump dump;
@@ -68,12 +76,12 @@ int g_iDisconCount = 0;
 int g_iDisConByRBFool = 0;
 int g_iDisConByTimeOut = 0;
 
-int g_iOldFrameTick;
-int g_iFpsCheck;
-int g_iTime;
-int g_iFPS;
-int g_iNetworkLoop;
-int g_iFirst;
+unsigned int g_iOldFrameTick;
+unsigned int g_iFpsCheck;
+unsigned int g_iTime;
+unsigned int g_iFPS;
+unsigned int g_iNetworkLoop;
+unsigned int g_iFirst;
 
 ULONGLONG g_fpsCheck;
 //========================================
@@ -83,8 +91,21 @@ ULONGLONG g_fpsCheck;
 
 
 
+unsigned int WINAPI MonitorThread(void* pArg);
+
+
 int main()
 {
+    // 모니터 스레드 생성
+    HANDLE hMonitorThread;   // 모니터 스레드 핸들값
+    DWORD dwThreadID;
+    hMonitorThread = (HANDLE)_beginthreadex(NULL, 0, MonitorThread, NULL , 0, (unsigned int*)&dwThreadID);
+
+    
+
+
+
+
     //=====================================================================================================================================
     // listen 소켓 준비
     //=====================================================================================================================================
@@ -250,22 +271,52 @@ void ServerControl(void)
 // 모니터링 정보를 표시, 저장, 전송하는 경우 사용
 void Monitor(void)
 {
-    ++g_iNetworkLoop;
+    InterlockedIncrement(&g_iNetworkLoop);
+
     g_iTime = timeGetTime();
     if (g_iTime - g_iOldFrameTick >= TICK_PER_FRAME)
     {
         g_iOldFrameTick = g_iTime - ((g_iTime - g_iFirst) % TICK_PER_FRAME);
-        ++g_iFPS;
-    }
-    if (g_iTime - g_iFpsCheck >= 1000)
-    {
-        g_iFpsCheck += 1000;
-        printf("-----------------------------------------------------\n");
-        printf("FPS : %d\n", g_iFPS);
-        printf("Network Loop Num: %u\n", g_iNetworkLoop);
-        printf("SyncCount : %d\n", g_iSyncCount);
-        printf("-----------------------------------------------------\n");
-        g_iNetworkLoop = 0;
-        g_iFPS = 0;
+        InterlockedIncrement(&g_iFPS);
     }
 }
+
+
+
+// 인자로 받은 서버의 TPS 및 보고 싶은 정보를 1초마다 감시하는 스레드
+unsigned int WINAPI MonitorThread(void* pArg)
+{
+    SystemMonitor monitor;
+
+    while (true)
+    {
+
+        std::wcout << L"======================================================" << std::endl;
+
+        monitor.PrintMonitoringData();
+        std::cout << "\n";
+
+        UINT32 globalTime = InterlockedCompareExchange(&g_iTime, 0, 0);
+        if (globalTime - g_iFpsCheck >= 1000)
+        {
+            g_iFpsCheck += 1000;
+
+            UINT32 netLoop = InterlockedExchange(&g_iNetworkLoop, 0);
+            UINT32 fps = InterlockedExchange(&g_iFPS, 0);
+
+            printf("FPS : %d\n", fps);
+            printf("Network Loop Num: %u\n", netLoop);
+            printf("SyncCount : %d\n", g_iSyncCount);
+        }
+
+
+        std::wcout << L"======================================================" << std::endl;
+
+        // 1초간 Sleep
+        Sleep(1000);
+    }
+
+    return 0;
+}
+
+

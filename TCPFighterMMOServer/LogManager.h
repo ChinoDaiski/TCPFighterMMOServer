@@ -66,18 +66,18 @@ private:
 template<typename ...Args>
 inline void LogManager::LogMessage(LogLevel level, const std::string& levelStr, Args ...args)
 {
-    if (level >= currentLogLevel) {
-        std::ostringstream oss;
-        // 가변 인자들을 스트림에 추가
-        (oss << ... << args); // Fold expression (C++17)
+    //if (level >= currentLogLevel) {
+    //    std::ostringstream oss;
+    //    // 가변 인자들을 스트림에 추가
+    //    (oss << ... << args); // Fold expression (C++17)
 
-        logQueue.enqueue(oss.str());
+    //    logQueue.enqueue(oss.str());
 
-        //if (m_logFile.is_open()) {
-        //    m_logFile << "[" << GetCurrentTime() << "][" << levelStr << "] " << oss.str() << std::endl;
-        //    m_logFile.close();
-        //}
-    }
+    //    //if (m_logFile.is_open()) {
+    //    //    m_logFile << "[" << GetCurrentTime() << "][" << levelStr << "] " << oss.str() << std::endl;
+    //    //    m_logFile.close();
+    //    //}
+    //}
 }
 
 template<typename ...Args>

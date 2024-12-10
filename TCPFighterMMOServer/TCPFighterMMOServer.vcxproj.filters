@@ -241,7 +241,6 @@
     <ClInclude Include="MemoryPool.h">
       <Filter>소스 파일\01. Manager\06. MemoryPoolMgr\MemoryPool</Filter>
     </ClInclude>
-    <ClInclude Include="resource.h" />
     <ClInclude Include="MemoryPoolManager.h">
       <Filter>소스 파일\01. Manager\06. MemoryPoolMgr</Filter>
     </ClInclude>
@@ -256,6 +255,9 @@
     </ClInclude>
     <ClInclude Include="CrashDump.h">
       <Filter>소스 파일\99. Etc\06. CrashDump</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>소스 파일\99. Etc</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

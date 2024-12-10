@@ -77,8 +77,15 @@ bool CTimerManager::CheckFrame(void)
 	// 프레임 맞추기
 	if (m_currentMainLogicTime < (m_currentServerTime + m_givenFrameTime))
 		return false;
+	
 
 	m_currentServerTime += m_givenFrameTime;
+
+	//// 프레임이 밀렸을 경우 서버 시간을 당겨옴.
+	//while (m_currentMainLogicTime > m_currentServerTime)
+	//{
+	//	m_currentServerTime += m_givenFrameTime;
+	//}
 
 #ifdef CHECK_GITTE
 
